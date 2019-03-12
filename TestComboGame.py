@@ -31,7 +31,7 @@ def rungame():
         plyr = csp.ComboStrategyPlayer(playme, playme.playerboard[plnum])
         # need at least 2 strategies
         stratidxs = [idx for idx in range(len(strats))]
-        for strcnt in range(random.randint(2, len(strats))):
+        for strcnt in range(random.randint(2, 6)):
             sidx = random.randint(0, len(stratidxs)-1)
             plyr.addstrategy(strats[stratidxs[sidx]]())
             stratidxs.remove(stratidxs[sidx])

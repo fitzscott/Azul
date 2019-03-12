@@ -3,14 +3,16 @@ import sys
 gamenum = 0
 maxscore = 0
 rslts = []
+plyrnum = 0
 
 def outputresults(rslts):
     for result in rslts:
-        if int(result[1]) == maxscore:
+        if int(result[2]) == maxscore:
             win = "1"
         else:
             win = "0"
-        print("|".join([str(gamenum), result[0], str(result[1]), win]))
+        print("|".join([str(gamenum), str(result[0]), result[1], \
+                        str(result[2]), win]))
 
 if len(sys.argv) == 2:
     gamenum = int(sys.argv[1])
@@ -29,12 +31,14 @@ for line in sys.stdin:
         gamenum += 1
         maxscore = 0
         rslts = []
+        plyrnum = 0
         continue
     elif flds[0] == "ComboStrategyPlayer:":
         score = flds[-1]
+        plyrnum += 1
         # print("    score is " + score)
         maxscore = max(maxscore, int(score))
         for strat in flds[1:-4]:    # end of range not inclusive
-            rslts.append((strat, score))
+            rslts.append((plyrnum, strat, score))
 
 outputresults(rslts)
