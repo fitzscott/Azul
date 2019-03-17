@@ -108,6 +108,10 @@ class Game():
     def bag(self):
         return (self._bag)
 
+    @property
+    def numplayers(self):
+        return (self._numplayers)
+
     def turnover(self):
         """
         turnover - when all the display areas and the central area are empty,

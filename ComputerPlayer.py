@@ -36,8 +36,8 @@ class ComputerPlayer(pl.Player):
         color = rec_opt[1]
         preprow = int(rec_opt[2])
         tileset = self.game.chooseoption(option, color)
-        print("getting tileset " + str(tileset) + " from option " + \
-              str(option) + " into row " + str(preprow))
+        # print("getting tileset " + str(tileset) + " from option " + \
+        #       str(option) + " into row " + str(preprow))
         self.board.playtiles(preprow, tileset)
 
 
