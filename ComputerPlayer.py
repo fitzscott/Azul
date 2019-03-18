@@ -17,14 +17,14 @@ class ComputerPlayer(pl.Player):
         # get my options from the game
         opts = self.game.options()
         choice = random.randint(0, len(opts)-1)
-        print("Choosing " + opts[choice])
+        # print("Choosing " + opts[choice])
         # figure out which color
         if opts[choice][0] == '0' and opts[choice][2] == '1':
             startidx = 3
         else:
             startidx = 2
         color = opts[choice][random.randint(startidx, len(opts[choice])-1)]
-        print("Chosen color is " + color)
+        # print("Chosen color is " + color)
         tileset = self.game.chooseoption(opts[choice], color)
         # print("tileset is " + str(tileset))
         preprow = random.randint(0, 4)      # _really_ random

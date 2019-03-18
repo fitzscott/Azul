@@ -21,7 +21,7 @@ strats = [mpcs.MostPrevalentColorStrategy, fus.FinishUnfinishedStrategy,
           mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,
           amfs.AtMostFitStrategy, cps.CentralPositionStrategy]
 
-def rungame():
+def rungame(minstrats=2, maxstrats=6):
     maxturns = 300
 
     playme = g.Game(4)
@@ -30,7 +30,7 @@ def rungame():
     for plnum in range(4):
         plyr = csp.ComboStrategyPlayer(playme, playme.playerboard[plnum])
         # need at least 2 strategies
-        plyr.randstrats(2, 6)
+        plyr.randstrats(minstrats, maxstrats)
         print(plyr)
         plyrz.append(plyr)
 
@@ -76,4 +76,9 @@ def rungame():
     return (retval)
 
 if __name__ == "__main__":
-    rungame()
+    if len(sys.argv) == 3:
+        mncnt = int(sys.argv[1])
+        mxcnt = int(sys.argv[2])
+        rungame(mncnt, mxcnt)
+    else:
+        rungame()

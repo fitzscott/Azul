@@ -19,7 +19,7 @@ class CompleteColorStrategy(mpcs.MostPrevalentColorStrategy):
                     colorcounts[color] = colorcounts.get(color, 0) + 1
                     totalcount += 1
         if totalcount == 0:
-            print("Complete color found no evaluations")
+            # print("Complete color found no evaluations")
             return(super().evaluate(options, board, game))
         rankedcolors = [(color, colorcounts[color])
                         for color in colorcounts.keys()

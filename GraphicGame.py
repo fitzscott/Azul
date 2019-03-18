@@ -13,7 +13,7 @@ class GraphicGame(g.Game):
     def __init__(self, numplayers=4):
         super().__init__(numplayers)
         self.loadtiles()
-        self._dims = [800, 600]
+        self._dims = [900, 600]
         self._players = []
 
     def addCompPlayers(self):
@@ -25,16 +25,15 @@ class GraphicGame(g.Game):
             self._players.append(plyr)
 
     def drawboard(self, plnum, preporfinal, topx, topy):
-        tiledim = 15
+        tiledim = 20
 
         clr = (0, 0, 0)
         if preporfinal == "P":
             dispstr = str(self.playerboard[plnum].prepboard)
-            clr = (0, 0, 0)
         else:   # final board
             dispstr = str(self.playerboard[plnum].finalboard)
-            clr = (255, 255, 255)
-        pygame.draw.rect(self._screen, clr, [topx, topy, 100, 100], 2)
+            # clr = (255, 255, 255)
+        pygame.draw.rect(self._screen, clr, [topx-1, topy-1, 102, 102], 2)
 
         currrow = 0
         for row in dispstr.split("\n"):
@@ -47,7 +46,7 @@ class GraphicGame(g.Game):
                 #       " of color " + str(GraphicGame.Colors[col]))
                 pygame.draw.rect(self._screen, GraphicGame.Colors[col], \
                                  [topx + currcol * tiledim, \
-                                  topy + currcol * tiledim, \
+                                  topy + currrow * tiledim, \
                                   tiledim, tiledim])
                 currcol += 1
             currrow += 1
@@ -82,6 +81,9 @@ class GraphicGame(g.Game):
                     # cont = False
                     for plnum in range(self.numplayers):
                         self.playerboard[plnum].movescore(self.box)
+                        self.drawboard(plnum, "P", plnum * 210 + 25, 20)
+                        self.drawboard(plnum, "F", plnum * 210 + 127, 20)
+                        pygame.display.flip()
                         if self.playerboard[plnum].firstplayer:
                             firstplayer = plnum
                             self.playerboard[plnum].firstplayer = False
@@ -93,11 +95,13 @@ class GraphicGame(g.Game):
                             break
                     break
                 self._players[plnum].taketurn()
-                self.drawboard(plnum, "P", plnum * 200 + 15, 15)
-                self.drawboard(plnum, "F", plnum * 200 + 315, 15)
+                self.drawboard(plnum, "P", plnum * 210 + 25, 20)
+                # self.drawboard(plnum, "F", plnum * 210 + 125, 20)
                 pygame.display.flip()
-                print("tick tock")
-                pygame.time.wait(1000)
+                pygame.time.wait(100)
+            self.show()
+
+        pygame.time.wait(10000)
 
 
 if __name__ == "__main__":
