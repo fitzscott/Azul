@@ -194,6 +194,8 @@ class GraphicGame(g.Game):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         cont = False
+                        gamecnt = iters + 1
+                        break
                 for idxnum in range(self.numplayers):
                     clock.tick(10)
                     plnum = (firstplayer + idxnum) % self.numplayers
