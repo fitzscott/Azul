@@ -14,6 +14,9 @@ class Game():
 
     def __init__(self, numplayers=4):
         self._numplayers = numplayers
+        self.reset()
+
+    def reset(self):
         self._factorydisplays = []
         for cnt in range(2 * self._numplayers + 1):
             self._factorydisplays.append(pd.Pad())

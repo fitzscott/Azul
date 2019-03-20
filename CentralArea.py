@@ -38,10 +38,13 @@ class CentralArea(ta.TileArea):
         super().addtile(tile)
 
     def takecolor(self, color):
+        # assert color != '1'       # this really shouldn't happen
+        if len(self.tiles) == 1 and color == "1":
+            print("someone selected 1 when no tiles in center")
         retlist = super().takecolor(color)
         if self._firstplayer:
             retlist.append('1')
-            if '1' in self.tiles:
+            while '1' in self.tiles:
                 self.tiles.remove('1')
             self._firstplayer = False
         return (retlist)

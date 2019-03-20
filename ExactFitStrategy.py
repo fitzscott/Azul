@@ -28,6 +28,8 @@ class ExactFitStrategy(strat.Strategy):
             dispnum = opt[0]
             colorcount = {}
             for color in opt[2:]:
+                if color == "1":
+                    continue
                 colorcount[color] = colorcount.get(color, 0) + 1
             for ckey in colorcount.keys():  # ckey is color
                 for slotidx in range(len(slots)):
