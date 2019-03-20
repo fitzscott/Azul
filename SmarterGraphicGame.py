@@ -1,5 +1,18 @@
 import GraphicGame as gg
 import random
+import ComboStrategyPlayer as csp
+import MostPrevalentColorStrategy as mpcs
+import FinishUnfinishedStrategy as fus
+import ExactFitStrategy as efs
+import FillRowStrategy as frs
+import FillColumnStrategy as fcs
+import CompleteColorStrategy as ccs
+import MaxPlaceScoreStrategy as mpss
+import MinPenaltyStrategy as mps
+import DisplayHighColorStrategy as dhcs
+import AtMostFitStrategy as amfs
+import CentralPositionStrategy as cps
+
 
 class SmarterGraphicGame(gg.GraphicGame):
     """
@@ -9,26 +22,15 @@ class SmarterGraphicGame(gg.GraphicGame):
     def addCompPlayers(self):
         import ComboStrategyPlayer as csp
 
-        import ComboStrategyPlayer as csp
-        import MostPrevalentColorStrategy as mpcs
-        import FinishUnfinishedStrategy as fus
-        import ExactFitStrategy as efs
-        import FillRowStrategy as frs
-        import FillColumnStrategy as fcs
-        import CompleteColorStrategy as ccs
-        import MaxPlaceScoreStrategy as mpss
-        import MinPenaltyStrategy as mps
-        import DisplayHighColorStrategy as dhcs
-        import AtMostFitStrategy as amfs
-        import CentralPositionStrategy as cps
 
         strats = [mpcs.MostPrevalentColorStrategy, fus.FinishUnfinishedStrategy,  # 0 1
                   efs.ExactFitStrategy, frs.FillRowStrategy, fcs.FillColumnStrategy, # 2 3 4
                   ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,  # 5 6
                   mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,  # 7 8
                   amfs.AtMostFitStrategy, cps.CentralPositionStrategy]  # 9 10
-        """
-        Most successful 3-strategy combinations (maybe):
+
+        # Most successful 3-strategy combinations (maybe):
+        mostsuccessful = """
         CentralPositionStrategy + DisplayHighColorStrategy + FillColumnStrategy: 0.883720930233
         CentralPositionStrategy + MaxPlaceScoreStrategy + MostPrevalentColorStrategy: 0.811320754717
         FillRowStrategy + MaxPlaceScoreStrategy + MostPrevalentColorStrategy: 0.795454545455
@@ -56,19 +58,29 @@ class SmarterGraphicGame(gg.GraphicGame):
         AtMostFitStrategy + CentralPositionStrategy + FillRowStrategy: 0.553191489362
         """
 
-        bestcombos = [[10, 8, 4], [10, 6, 0], [3, 6, 0], [8, 3, 6], [10, 8, 3],
-                      [10, 4, 3], [10, 4, 0], [10, 8, 0],
-                      [4, 6, 0], [10, 3, 0], [8, 6, 0], [10, 8, 6],
-                      [8, 3, 0], [4, 3, 0], [4, 3, 6],
-                      [10, 3, 6], [10, 4, 6], [8, 4, 6],
-                      [9, 4, 6], [9, 10, 3]]
+        # This was a pain to put together.  Smarter way?
+        # bestcombos = [[10, 8, 4], [10, 6, 0], [3, 6, 0], [8, 3, 6], [10, 8, 3],
+        #               [10, 4, 3], [10, 4, 0], [10, 8, 0],
+        #               [4, 6, 0], [10, 3, 0], [8, 6, 0], [10, 8, 6],
+        #               [8, 3, 0], [4, 3, 0], [4, 3, 6],
+        #               [10, 3, 6], [10, 4, 6], [8, 4, 6],
+        #               [9, 4, 6], [9, 10, 3]]
         self._players = []
+        stratnamecombos = []
+        for stratset in mostsuccessful.strip().split("\n"):
+            stratnames = stratset.split(":")[0].strip().split(" + ")
+            if len(stratnames) == 3:
+                stratnamecombos.append(stratnames)
+                # print("!".join(stratnames))
         for pidx in range(self.numplayers):
             plyr = csp.ComboStrategyPlayer(self, self.playerboard[pidx])
             # choose a combo above
-            choice = random.randint(0, len(bestcombos)-1)
-            for stratidx in bestcombos[choice]:
-                plyr.addstrategy(strats[stratidx]())
+            choice = random.randint(0, len(stratnamecombos)-1)
+            for stratname in stratnamecombos[choice]:
+                for stratcls in strats:
+                    if stratcls.__name__ == stratname:
+                        plyr.addstrategy(stratcls())
+                        break
             self._players.append(plyr)
 
 if __name__ == "__main__":
