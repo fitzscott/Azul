@@ -26,6 +26,13 @@ class Penalty(ta.TileArea):
         super().__init__()
         # self._firstplayer = False
 
+    def addtile(self, tile):
+        if tile == '1' and '1' in self.tiles:
+            print("Received a 2nd 1st player tile?")
+        else:
+            super().addtile(tile)
+
+    # This was replaced with a flag at the PlayerBoard level.
     # @property
     # def firstplayer(self):
     #     for tile in self.tiles:
