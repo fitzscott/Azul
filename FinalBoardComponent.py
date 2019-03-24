@@ -169,19 +169,22 @@ class FinalBoardComponent(brd.BoardComponent):
                 cnt += 1
         return (cnt)
 
+    def counthorizrowcomplete(self):
+        retval = 0
+        for rownum in range(len(self.rows)):
+            rowfull = self.rowfillcount(rownum) == FinalBoardComponent.dimension
+            if rowfull:
+                retval += 1
+                continue
+        return (retval)
+
     def horizrowcomplete(self):
         """
         horizrowcomplete - determine if a row is completely filled in.
         This signifies the end of the game.
         :return: boolean
         """
-        retval = False
-        for rownum in range(len(self.rows)):
-            rowfull = self.rowfillcount(rownum) == FinalBoardComponent.dimension
-            if rowfull:
-                retval = True
-                break
-        return (retval)
+        return (self.counthorizrowcomplete() > 0)
 
     def finalscore(self):
         sc = 0

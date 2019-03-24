@@ -1,5 +1,7 @@
 import pygame
 import Game as g
+import sys
+import math
 
 class GraphicGame(g.Game):
     """
@@ -17,15 +19,26 @@ class GraphicGame(g.Game):
         self._players = []
         self._screen = None
         self._revcolors = {}
+        self._factoryradius = 40
+        self._factlocs = {}
+        self._centrallocs = {}
         for ckey in GraphicGame.Colors.keys():
             colors = GraphicGame.Colors[ckey]
             # Is there a way to do a comprehension here instead?
             self._revcolors[ckey] = (255 - colors[0], 255 - colors[1],
                                      255 - colors[2])
+        # all the underlying final boards are the same
+        self._finalcolors = self.playerboard[0].finalboard.underrows
+        self._humanevent = None
+        self._clock = None
 
     @property
     def revcolors(self):
         return(self._revcolors)
+
+    @property
+    def factoryradius(self):
+        return (self._factoryradius)
 
     def addCompPlayers(self):
         import ComboStrategyPlayer as csp
@@ -67,6 +80,17 @@ class GraphicGame(g.Game):
                                  [topx + currcol * self.tiledim + 1,
                                   topy + currrow * self.tiledim + 1,
                                   self.tiledim - 1, self.tiledim - 1])
+                # draw a marker for the position in the final board
+                if preporfinal == "F" and \
+                        GraphicGame.Colors[col] == GraphicGame.Gray:
+                    circcolor = self._finalcolors[currrow][currcol]
+                    pygame.draw.circle(self._screen,
+                                       GraphicGame.Colors[circcolor],
+                                       [topx + currcol * self.tiledim +
+                                        int(self.tiledim / 2),
+                                        topy + currrow * self.tiledim +
+                                        int(self.tiledim / 2)],
+                                       int(self.tiledim / 4))
                 currcol += 1
             currrow += 1
 
@@ -85,17 +109,17 @@ class GraphicGame(g.Game):
                 break
 
     def drawfactory(self, centerx, centery, num):
-        factoryradius = 40
         tiles = self.display[num - 1].tiles
         if len(tiles) == 0:
             clr = (192, 192, 192)
         else:
             clr = (255, 255, 255)
         pygame.draw.circle(self._screen, clr, (centerx, centery),
-                           factoryradius)
+                           self.factoryradius)
+        self._factlocs[num] = (centerx, centery)
 
         dispnum = self._font.render(str(num), True, (0, 0, 0), clr)
-        self._screen.blit(dispnum, (centerx - 2, centery - factoryradius + 1))
+        self._screen.blit(dispnum, (centerx - 2, centery - self.factoryradius + 1))
         for tileidx in range(len(tiles)):
             if tileidx % 2 == 0:
                 x = centerx - self.tiledim - 1
@@ -119,6 +143,7 @@ class GraphicGame(g.Game):
         numfactories = len(self.playerboard) * 2 + 1
         centralheight = 240
         ychange = int(centralheight / numfactories) * 2
+        self._factlocs = {}
 
         # clear the rectangle
         pygame.draw.rect(self._screen, GraphicGame.Gray,
@@ -155,10 +180,102 @@ class GraphicGame(g.Game):
             if tileidx % rowlen == 0:
                 y += self.tiledim + 5
             x = 330 + (tileidx % rowlen) * self.tiledim + 5
+            self._centrallocs[tileidx] = (x, y)
             pygame.draw.rect(self._screen, self.revcolors[tiles[tileidx]],
                              [x, y, self.tiledim, self.tiledim], 1)
             pygame.draw.rect(self._screen, GraphicGame.Colors[tiles[tileidx]],
                              [x + 1, y + 1, self.tiledim - 1, self.tiledim - 1])
+
+    def finddisplay(self, x, y):
+        retval = (-1, 0)
+        for factid in self._factlocs.keys():
+            factx, facty = self._factlocs[factid]
+            dist = math.sqrt((factx - x) ** 2 + (facty - y) ** 2)
+            if dist <= self.factoryradius:
+                tiles = self.display[factid - 1].tiles
+                if len(tiles) < 4:
+                    break
+                # Tiles 0 & 2 are left of the X value, 1 & 3 right.
+                # Tiles 0 & 1 are above the Y value, 2 & 3 below.
+                if x <= factx:
+                    if y <= facty:
+                        tile = tiles[0]
+                    else:
+                        tile = tiles[2]
+                else:
+                    if y <= facty:
+                        tile = tiles[1]
+                    else:
+                        tile = tiles[3]
+                retval = (factid, tile)
+        return (retval)
+
+    def findcentral(self, x, y):
+        for tileidx in self._centrallocs.keys():
+            # print("comparing " + str(x) + "," + str(y) + " vs." + \
+            #       str(self._centrallocs[tileidx]))
+            if x >= self._centrallocs[tileidx][0] and \
+                x < self._centrallocs[tileidx][0] + self.tiledim and \
+                y >= self._centrallocs[tileidx][1] and \
+                y < self._centrallocs[tileidx][1] + self.tiledim:
+                return (self.centralarea.tiles[tileidx])
+        return (None)
+
+    def handleclickevents(self, x, y):
+        """
+        A human player choice is made up of two click events:  Choosing a
+        color in a factory display and choosing the preparatory row in
+        which to place those color tiles.
+        :param x: X-axis position
+        :param y: Y-axis position
+        :return:
+        """
+        # print("in handleclickevents")
+        factnum, color = self.finddisplay(x, y)
+        if factnum != -1:
+            # print("clicked in circle " + str(factnum) + ", color " + color)
+            self._humanevent = str(factnum) + color
+        else:
+            centerval = self.findcentral(x, y)
+            if centerval is not None:
+                # print("clicked in the central area")
+                self._humanevent = "0" + centerval
+            elif y < 140:   # above the penalty line
+                # Maybe it's a prep row choice
+                # Since there's only one human player, simplify by just
+                # translating the X value to a row number.
+                topy = 20
+                rownum = int((y - topy) / self.tiledim)
+                # print("clicked in prep row " + str(rownum))
+                if rownum >= 0 and rownum < self.tiledim and \
+                        self._humanevent is not None:
+                    self._humanevent = self._humanevent[0:2] + str(rownum)
+
+    def chill(self, secs=1):
+        self._clock.tick(10)
+        pygame.time.wait(secs * 1000)
+
+    def getchoice(self, plyr):
+        if self._humanevent is not None and len(self._humanevent) == 3:
+            plyr.taketurn(self._humanevent)
+            self._humanevent = None
+            return (True)
+        pygame.time.wait(100)
+        # print("getting events in getchoice")
+        return (False)
+
+    def drawall(self, plnum):
+        self.drawboard(plnum, "P", plnum * 210 + 25, 20)
+        self.drawboard(plnum, "F", plnum * 210 + 127, 20)
+        self.drawpenalty(plnum, plnum * 210 + 25, 140)
+        score = self.playerboard[plnum].score
+        dispsco = self._font.render("Score: " + str(score),
+                                    True, (255, 255, 255),
+                                    (0, 0, 0))
+        self._screen.blit(dispsco, (plnum * 210 + 25, 170))
+        self.drawfactories()
+        self.drawcentral()
+        pygame.display.flip()
 
     def playbymyself(self, iters=1):
         """
@@ -166,6 +283,8 @@ class GraphicGame(g.Game):
         involve any keyboard, mouse, etc. input.
         :return:
         """
+        import HumanPlayer as hp
+
         pygame.init()
         self._screen = pygame.display.set_mode(self._dims)
         pygame.display.set_caption("Azul")
@@ -180,10 +299,11 @@ class GraphicGame(g.Game):
             font = fontlist[0]
         self._font = pygame.font.SysFont(font, 12)
 
-        clock = pygame.time.Clock()
+        self._clock = pygame.time.Clock()
 
         gamecnt = 0
         while gamecnt < iters:
+            self._clock.tick(10)
             self._screen.fill(GraphicGame.Gray)
             cont = True
             maxturns = 300
@@ -196,22 +316,16 @@ class GraphicGame(g.Game):
                         cont = False
                         gamecnt = iters + 1
                         break
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        clickx, clicky = pygame.mouse.get_pos()
+                        self.handleclickevents(clickx, clicky)
                 for idxnum in range(self.numplayers):
-                    clock.tick(10)
+                    self._clock.tick(10)
                     plnum = (firstplayer + idxnum) % self.numplayers
                     if self.turnover():
                         for plnum in range(self.numplayers):
                             self.playerboard[plnum].movescore(self.box)
-                            self.drawboard(plnum, "P", plnum * 210 + 25, 20)
-                            self.drawboard(plnum, "F", plnum * 210 + 127, 20)
-                            self.drawpenalty(plnum, plnum * 210 + 25, 140)
-                            score = str(self.playerboard[plnum].score)
-                            dispsco = self._font.render("Score: "+ score +
-                                                        (3 - len(score)) * " ",
-                                                        True, (255, 255, 255),
-                                                        (0, 0, 0))
-                            self._screen.blit(dispsco, (plnum * 210 + 25, 170))
-                            pygame.display.flip()
+                            self.drawall(plnum)
                             if self.playerboard[plnum].firstplayer:
                                 firstplayer = plnum
                                 self.playerboard[plnum].firstplayer = False
@@ -222,21 +336,30 @@ class GraphicGame(g.Game):
                                 cont = False
                                 break
                         break
-                    self._players[plnum].taketurn()
-                    self.drawboard(plnum, "P", plnum * 210 + 25, 20)
-                    self.drawpenalty(plnum, plnum * 210 + 25, 140)
-                    self.drawcentral()
-                    # self.drawboard(plnum, "F", plnum * 210 + 125, 20)
-                    score = self.playerboard[plnum].score
-                    dispsco = self._font.render("Score: " + str(score),
-                                                True, (255, 255, 255),
-                                                (0, 0, 0))
-                    self._screen.blit(dispsco, (plnum * 210 + 25, 170))
-                    self.drawfactories()
-                    self.drawcentral()
-                    pygame.display.flip()
+                    self.drawall(plnum)
+                    # This feels like a kludge.
+                    # print("class name is " + self._players[plnum].__class__.__name__ )
+                    if self._players[plnum].__class__.__name__ == "HumanPlayer":
+                        while not self.getchoice(self._players[plnum]):
+                            for event in pygame.event.get():
+                                if event.type == pygame.MOUSEBUTTONDOWN:
+                                    clickx, clicky = pygame.mouse.get_pos()
+                                    self.handleclickevents(clickx, clicky)
+                            pygame.time.wait(500)
+                    else:
+                        self._players[plnum].taketurn()
+                    self.drawall(plnum)
                     pygame.time.wait(100)
                 self.show()
+
+            # write "Winner" under winner's board (potentially more than 1)
+            print("Finding winner")
+            for winrnum in self.winner():
+                print("one winner is " + str(winrnum))
+                dispwnr = self._font.render("Winner!", True, (0, 0, 0),
+                                            (0, 255, 255))
+                self._screen.blit(dispwnr, (winrnum * 210 + 25, 190))
+                pygame.display.flip()
 
             pygame.time.wait(6000)
             self.reset()
@@ -248,5 +371,5 @@ class GraphicGame(g.Game):
 if __name__ == "__main__":
     gg = GraphicGame()
     gg.addCompPlayers()
-    gg.playbymyself(100)
+    gg.playbymyself(20)
 

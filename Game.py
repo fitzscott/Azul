@@ -164,6 +164,29 @@ class Game():
             tileset = self.display[dispnum-1].takecolor(color, self.centralarea)
         return(tileset)
 
+    def winner(self):
+        finalscores = [pb.score for pb in self.playerboard]
+        topscore = -1
+        for score in finalscores:
+            topscore = max(topscore, score)
+        wnrz = [plnum for plnum in range(len(self.playerboard))
+                if self.playerboard[plnum].score == topscore]
+        if len(wnrz) > 1:       # then check complete horizontal rows
+            horiz = { wnr: self.playerboard[wnr].finalboard.counthorizrowcomplete()
+                     for wnr in wnrz}
+            tophorizcnt = -1
+            for wnrhc in horiz.keys():
+                tophorizcnt = max(tophorizcnt, horiz[wnrhc])
+            wnrz = [realwnr for realwnr in horiz.keys()
+                    if horiz[realwnr] == tophorizcnt]
+        return (wnrz)
+
+    def chill(self, secs=1):
+        pass
+
+    def getchoice(self, plyr):
+        return(None)
+
 if __name__ == "__main__":
     g = Game(4)
     g.loadtiles()

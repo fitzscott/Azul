@@ -10,6 +10,10 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
         super().__init__(game, board)
         self._strategies = []
 
+    @property
+    def strstrategies(self):
+        return ([str(strat).split(".")[0][1:] for strat in self._strategies])
+
     def addstrategy(self, strtg):
         """
         addstrategy

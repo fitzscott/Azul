@@ -69,8 +69,15 @@ def rungame(minstrats=2, maxstrats=6):
         playme.playerboard[idxnum].finalscore()
     playme.show()
     print("\nSummary of final scores:")
-    for plyr in plyrz:
-        print(str(plyr) + " final score = " + str(plyr.board.score))
+    winrarr = playme.winner()
+    for plyridx in range(len(plyrz)):
+        if plyridx in winrarr:
+            winstr = "Winner: "
+        else:
+            winstr = "Loser:  "
+        print(winstr + str(plyrz[plyridx]) + " final score = " + \
+              str(plyrz[plyridx].board.score))
+
     if turnz == maxturns:
         retval = 1
     return (retval)
