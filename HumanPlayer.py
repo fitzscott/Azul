@@ -1,6 +1,6 @@
-import Player as pl
+import ComputerPlayer as cp
 
-class HumanPlayer(pl.Player):
+class HumanPlayer(cp.ComputerPlayer):
     """
     Human player - interpret events from game
     """
@@ -8,17 +8,8 @@ class HumanPlayer(pl.Player):
         super().__init__(game, board)
 
     def taketurn(self, event=None):
-        # event = None
-        # i = 0
-        # while event is None:
-        #     self.game.chill()
-        #     event = self.game.getchoice()
-        #     i += 1
-        #     if i > 1000:
-        #         print("Human take turn chilling")
-        #         i = 0
         assert event is not None
-        print("in human taketurn")
+        # print("in human taketurn")
         disp = event[0]
         color = event[1]
         preprow = int(event[2])

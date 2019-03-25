@@ -20,20 +20,49 @@ class SmarterGraphicGame(gg.GraphicGame):
     use some successful 3-strategy combos for players
     """
 
+    strats = [mpcs.MostPrevalentColorStrategy, fus.FinishUnfinishedStrategy,  # 0 1
+              efs.ExactFitStrategy, frs.FillRowStrategy, fcs.FillColumnStrategy,  # 2 3 4
+              ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,  # 5 6
+              mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,  # 7 8
+              amfs.AtMostFitStrategy, cps.CentralPositionStrategy]  # 9 10
+
     def getBestFromFile(self, numstrats):
         flnm = "bestcombo_" + str(numstrats) + ".txt"
         fl = open(flnm)
-        return ("\n".join(fl.readlines()))
+        retval = "\n".join(fl.readlines())
+        fl.close()
+        return (retval)
+
+    def getstratnamecombos(self, mostsuccessful, numstrats, delim):
+        stratnamecombos = []
+
+        for stratset in mostsuccessful.strip().split("\n"):
+            stratnames = stratset.split(":")[0].strip().split(delim)
+            if len(stratnames) == numstrats:
+                stratnamecombos.append(stratnames)
+                # print("!".join(stratnames))
+        # print(str(stratnamecombos))
+        return (stratnamecombos)
+
+    def gettopcombo(self, stratcnt, cnt=1):
+        mostsuccessful = self.getBestFromFile(stratcnt)
+        delim = "+"
+        return (self.getstratnamecombos(mostsuccessful, stratcnt, delim)[0:cnt])
+
+    def assigntoptoplayer(self, pidx, stratcnt):
+        plyr = csp.ComboStrategyPlayer(self, self.playerboard[pidx])
+        stratcombonms = self.gettopcombo(stratcnt)[0]
+        for stratname in stratcombonms:
+            for stratcls in SmarterGraphicGame.strats:
+                if stratcls.__name__ == stratname:
+                    plyr.addstrategy(stratcls())
+                    break
+        print("Player " + str(pidx + 1) + ":" + ",".join(plyr.strstrategies))
+        self._players.append(plyr)
 
     def addCompPlayers(self, numstrats=0):
         import ComboStrategyPlayer as csp
 
-
-        strats = [mpcs.MostPrevalentColorStrategy, fus.FinishUnfinishedStrategy,  # 0 1
-                  efs.ExactFitStrategy, frs.FillRowStrategy, fcs.FillColumnStrategy, # 2 3 4
-                  ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,  # 5 6
-                  mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,  # 7 8
-                  amfs.AtMostFitStrategy, cps.CentralPositionStrategy]  # 9 10
 
         if numstrats == 0:
             # Most successful 3-strategy combinations (maybe):
@@ -68,7 +97,7 @@ class SmarterGraphicGame(gg.GraphicGame):
             numstrats = 3
         else:
             mostsuccessful = self.getBestFromFile(numstrats)
-            print(mostsuccessful)
+            # print(mostsuccessful)
             delim = "+"
 
         # This was a pain to put together.  Smarter way?
@@ -79,18 +108,16 @@ class SmarterGraphicGame(gg.GraphicGame):
         #               [10, 3, 6], [10, 4, 6], [8, 4, 6],
         #               [9, 4, 6], [9, 10, 3]]
         self._players = []
-        stratnamecombos = []
-        for stratset in mostsuccessful.strip().split("\n"):
-            stratnames = stratset.split(":")[0].strip().split(delim)
-            if len(stratnames) == numstrats:
-                stratnamecombos.append(stratnames)
-                print("!".join(stratnames))
+        stratnamecombos = self.getstratnamecombos(mostsuccessful, numstrats, delim)
         for pidx in range(self.numplayers):
             plyr = csp.ComboStrategyPlayer(self, self.playerboard[pidx])
             # choose a combo above
-            choice = random.randint(0, len(stratnamecombos)-1)
+            # Limit combos to "top X"
+            topX = min(5, len(stratnamecombos)-1)
+            choice = random.randint(0, topX)
+            print("Choice " + str(choice) + " is " + str(stratnamecombos[choice]))
             for stratname in stratnamecombos[choice]:
-                for stratcls in strats:
+                for stratcls in SmarterGraphicGame.strats:
                     if stratcls.__name__ == stratname:
                         plyr.addstrategy(stratcls())
                         break
@@ -105,6 +132,8 @@ class SmarterGraphicGame(gg.GraphicGame):
 
 if __name__ == "__main__":
     gg = SmarterGraphicGame()
-    gg.addCompPlayers(8)
-    gg.replaceWithHuman(3)
-    gg.playbymyself(1)
+    # gg.addCompPlayers(6)
+    for plnum in range(4):
+        gg.assigntoptoplayer(plnum, plnum+4)    # 4, 5, 6, 7 strategies competing
+    gg.replaceWithHuman(random.randint(0,3))
+    gg.playbymyself(1000)

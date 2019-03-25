@@ -9,8 +9,8 @@ class GraphicGame(g.Game):
     """
     Gray = (127, 127, 127)
     Colors = { "K": (0,0,0), "W": (191, 191, 255), "B": (0, 31, 255),
-               "R": (255, 0, 0), "Y": (255, 191, 0), "-": Gray,
-               " ": (159, 159, 159), "1": (255, 255, 255) }
+               "R": (255, 0, 0), "Y": (255, 191, 0), " ": Gray,
+               "-": (159, 159, 159), "1": (255, 255, 255) }
 
     def __init__(self, numplayers=4):
         super().__init__(numplayers)
@@ -81,8 +81,8 @@ class GraphicGame(g.Game):
                                   topy + currrow * self.tiledim + 1,
                                   self.tiledim - 1, self.tiledim - 1])
                 # draw a marker for the position in the final board
-                if preporfinal == "F" and \
-                        GraphicGame.Colors[col] == GraphicGame.Gray:
+                if preporfinal == "F" and col == "-":
+                    # GraphicGame.Colors[col] == GraphicGame.Gray:
                     circcolor = self._finalcolors[currrow][currcol]
                     pygame.draw.circle(self._screen,
                                        GraphicGame.Colors[circcolor],
@@ -110,7 +110,14 @@ class GraphicGame(g.Game):
 
     def drawfactory(self, centerx, centery, num):
         tiles = self.display[num - 1].tiles
-        if len(tiles) == 0:
+        if self._humanevent is not None:
+            selfactnum = int(self._humanevent[0])
+            selcolor = self._humanevent[1]
+            drawx = True
+        else:
+            selfactnum = -1
+            drawx = False
+        if len(tiles) == 0 or num == selfactnum:
             clr = (192, 192, 192)
         else:
             clr = (255, 255, 255)
@@ -133,6 +140,12 @@ class GraphicGame(g.Game):
                              [x, y, self.tiledim, self.tiledim], 1)
             pygame.draw.rect(self._screen, GraphicGame.Colors[tiles[tileidx]],
                              [x + 1, y + 1, self.tiledim - 1, self.tiledim - 1])
+            if drawx and num == selfactnum and tiles[tileidx] == selcolor:
+                # draw an X through the selected tiles
+                pygame.draw.line(self._screen, self.revcolors[tiles[tileidx]],
+                                 [x, y], [x+self.tiledim, y+self.tiledim], 2)
+                pygame.draw.line(self._screen, self.revcolors[tiles[tileidx]],
+                                 [x+self.tiledim, y], [x, y+self.tiledim], 2)
 
 
     def drawfactories(self):
@@ -185,6 +198,19 @@ class GraphicGame(g.Game):
                              [x, y, self.tiledim, self.tiledim], 1)
             pygame.draw.rect(self._screen, GraphicGame.Colors[tiles[tileidx]],
                              [x + 1, y + 1, self.tiledim - 1, self.tiledim - 1])
+            if self._humanevent is not None:
+                selfactnum = int(self._humanevent[0])
+                seltilecolor = self._humanevent[1]
+            else:
+                selfactnum = -1
+                seltilecolor = 'Z'
+            # print("Selected factory " + str(selfactnum) + " color " + seltilecolor)
+            if selfactnum == 0 and seltilecolor == tiles[tileidx]:
+                # draw an X through the selected tiles
+                pygame.draw.line(self._screen, self.revcolors[tiles[tileidx]],
+                                 [x, y], [x+self.tiledim, y+self.tiledim], 2)
+                pygame.draw.line(self._screen, self.revcolors[tiles[tileidx]],
+                                 [x+self.tiledim, y], [x, y+self.tiledim], 2)
 
     def finddisplay(self, x, y):
         retval = (-1, 0)
@@ -221,13 +247,14 @@ class GraphicGame(g.Game):
                 return (self.centralarea.tiles[tileidx])
         return (None)
 
-    def handleclickevents(self, x, y):
+    def handleclickevents(self, x, y, plnum):
         """
         A human player choice is made up of two click events:  Choosing a
         color in a factory display and choosing the preparatory row in
         which to place those color tiles.
         :param x: X-axis position
         :param y: Y-axis position
+        :param plnum: player number
         :return:
         """
         # print("in handleclickevents")
@@ -235,17 +262,19 @@ class GraphicGame(g.Game):
         if factnum != -1:
             # print("clicked in circle " + str(factnum) + ", color " + color)
             self._humanevent = str(factnum) + color
+            self.drawall(plnum)
         else:
             centerval = self.findcentral(x, y)
             if centerval is not None:
-                # print("clicked in the central area")
                 self._humanevent = "0" + centerval
+                # print("clicked in the central area, event is " + self._humanevent)
+                self.drawall(plnum)
             elif y < 140:   # above the penalty line
                 # Maybe it's a prep row choice
                 # Since there's only one human player, simplify by just
                 # translating the X value to a row number.
                 topy = 20
-                rownum = int((y - topy) / self.tiledim)
+                rownum = min(self.tiledim - 1, int((y - topy) / self.tiledim))
                 # print("clicked in prep row " + str(rownum))
                 if rownum >= 0 and rownum < self.tiledim and \
                         self._humanevent is not None:
@@ -268,10 +297,11 @@ class GraphicGame(g.Game):
         self.drawboard(plnum, "P", plnum * 210 + 25, 20)
         self.drawboard(plnum, "F", plnum * 210 + 127, 20)
         self.drawpenalty(plnum, plnum * 210 + 25, 140)
-        score = self.playerboard[plnum].score
-        dispsco = self._font.render("Score: " + str(score),
+        score = str(self.playerboard[plnum].score)
+        dispsco = self._font.render("Score:" + " " * (6 - len(score)) \
+                                    + score + " " * (5 - len(score)),
                                     True, (255, 255, 255),
-                                    (0, 0, 0))
+                                    GraphicGame.Gray)
         self._screen.blit(dispsco, (plnum * 210 + 25, 170))
         self.drawfactories()
         self.drawcentral()
@@ -318,7 +348,7 @@ class GraphicGame(g.Game):
                         break
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         clickx, clicky = pygame.mouse.get_pos()
-                        self.handleclickevents(clickx, clicky)
+                        self.handleclickevents(clickx, clicky, 0)
                 for idxnum in range(self.numplayers):
                     self._clock.tick(10)
                     plnum = (firstplayer + idxnum) % self.numplayers
@@ -342,9 +372,11 @@ class GraphicGame(g.Game):
                     if self._players[plnum].__class__.__name__ == "HumanPlayer":
                         while not self.getchoice(self._players[plnum]):
                             for event in pygame.event.get():
+                                if event.type == pygame.QUIT:
+                                    sys.exit(0)
                                 if event.type == pygame.MOUSEBUTTONDOWN:
                                     clickx, clicky = pygame.mouse.get_pos()
-                                    self.handleclickevents(clickx, clicky)
+                                    self.handleclickevents(clickx, clicky, plnum)
                             pygame.time.wait(500)
                     else:
                         self._players[plnum].taketurn()
@@ -361,7 +393,8 @@ class GraphicGame(g.Game):
                 self._screen.blit(dispwnr, (winrnum * 210 + 25, 190))
                 pygame.display.flip()
 
-            pygame.time.wait(6000)
+            print("Game " + str(gamecnt) + " completed.")
+            pygame.time.wait(10000)
             self.reset()
             self.loadtiles()
             self.addCompPlayers()
