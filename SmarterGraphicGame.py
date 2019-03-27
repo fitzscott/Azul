@@ -136,4 +136,4 @@ if __name__ == "__main__":
     for plnum in range(4):
         gg.assigntoptoplayer(plnum, plnum+4)    # 4, 5, 6, 7 strategies competing
     gg.replaceWithHuman(random.randint(0,3))
-    gg.playbymyself(1000)
+    gg.playbymyself(1)
