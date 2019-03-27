@@ -33,12 +33,21 @@ class SmarterGraphicGame(gg.GraphicGame):
         fl.close()
         return (retval)
 
+    def getReallyBestFromFile(self, whichbest):
+        flnm = "reallythebest" + str(whichbest) + ".txt"
+        fl = open(flnm)
+        retval = "\n".join(fl.readlines())
+        fl.close()
+        print("Really best:\n" + str(retval))
+        return (retval)
+
     def getstratnamecombos(self, mostsuccessful, numstrats, delim):
         stratnamecombos = []
 
         for stratset in mostsuccessful.strip().split("\n"):
             stratnames = stratset.split(":")[0].strip().split(delim)
-            if len(stratnames) == numstrats:
+            #if len(stratnames) == numstrats:
+            if len(stratnames) >= 2:
                 stratnamecombos.append(stratnames)
                 # print("!".join(stratnames))
         # print(str(stratnamecombos))
@@ -96,7 +105,8 @@ class SmarterGraphicGame(gg.GraphicGame):
             delim = " + "
             numstrats = 3
         else:
-            mostsuccessful = self.getBestFromFile(numstrats)
+            mostsuccessful = self.getReallyBestFromFile(2)
+            # mostsuccessful = self.getBestFromFile(numstrats)
             # print(mostsuccessful)
             delim = "+"
 
@@ -113,7 +123,8 @@ class SmarterGraphicGame(gg.GraphicGame):
             plyr = csp.ComboStrategyPlayer(self, self.playerboard[pidx])
             # choose a combo above
             # Limit combos to "top X"
-            topX = min(5, len(stratnamecombos)-1)
+            # topX = min(5, len(stratnamecombos)-1)
+            topX = len(stratnamecombos)-1
             choice = random.randint(0, topX)
             print("Choice " + str(choice) + " is " + str(stratnamecombos[choice]))
             for stratname in stratnamecombos[choice]:
@@ -134,6 +145,8 @@ if __name__ == "__main__":
     gg = SmarterGraphicGame()
     # gg.addCompPlayers(6)
     for plnum in range(4):
-        gg.assigntoptoplayer(plnum, plnum+4)    # 4, 5, 6, 7 strategies competing
+        # gg.assigntoptoplayer(plnum, plnum+4)    # 4, 5, 6, 7 strategies competing
+        gg.addCompPlayers(-1)                     # new list of best
     gg.replaceWithHuman(random.randint(0,3))
     gg.playbymyself(1)
+

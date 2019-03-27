@@ -54,12 +54,14 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
         import DisplayHighColorStrategy as dhcs
         import AtMostFitStrategy as amfs
         import CentralPositionStrategy as cps
+        import TopRowsStrategy as trs
 
         strats = [mpcs.MostPrevalentColorStrategy, fus.FinishUnfinishedStrategy,
                   efs.ExactFitStrategy, frs.FillRowStrategy, fcs.FillColumnStrategy,
                   ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,
                   mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,
-                  amfs.AtMostFitStrategy, cps.CentralPositionStrategy]
+                  amfs.AtMostFitStrategy, cps.CentralPositionStrategy,
+                  trs.TopRowsStrategy]
 
         stratidxs = [idx for idx in range(len(strats))]
         assert lo >= 2
