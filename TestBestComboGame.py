@@ -59,14 +59,14 @@ class TestBestComboGame(g.Game):
         return (stratnamecombos)
     
     
-    def assembletopcombos(self, cnt=2):
+    def assembletopcombos(self, cnt, strbgn, strend):
         """
         Take top X combos from each strategy count & assemble in a select list.
         :param cnt: Top X
         :return:
         """
         self.topcombos = []
-        for stratcnt in range(2,10):
+        for stratcnt in range(strbgn, strend+1):
             mostsuccessful = self.getBestFromFile(stratcnt)
             delim = "+"
             self.topcombos.extend(self.getstratnamecombos(mostsuccessful,
@@ -85,10 +85,10 @@ class TestBestComboGame(g.Game):
     #     print("Player " + str(pidx + 1) + ":" + ",".join(plyr.strstrategies))
     #     self._plyrz.append(plyr)
 
-    def rungame(self):
+    def rungame(self, topx=2, strst=2, stren=10):
         maxturns = 300
 
-        self.assembletopcombos()
+        self.assembletopcombos(topx, strst, stren)
         self.loadtiles()
         for plnum in range(len(self.playerboard)):
             plyr = csp.ComboStrategyPlayer(self, self.playerboard[plnum])
@@ -151,4 +151,4 @@ class TestBestComboGame(g.Game):
 
 if __name__ == "__main__":
     tbcg = TestBestComboGame(4)
-    tbcg.rungame()
+    tbcg.rungame(2, 4, 8)
