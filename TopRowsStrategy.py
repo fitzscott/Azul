@@ -21,7 +21,7 @@ class TopRowsStrategy(pcs.PlayableColorStrategy):
                             board.prepboard.rowfull(rownum):
                         rank = 4 - rownum
                         evals.append(opt[0] + color + str(rownum) + "_" + str(rank))
-        print("Top rows evaluations: " + str(evals))
+        # print("Top rows evaluations: " + str(evals))
         return (evals)
 
     def recommend(self, options, board, game = None):

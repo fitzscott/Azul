@@ -243,7 +243,8 @@ class GraphicGame(g.Game):
             if x >= self._centrallocs[tileidx][0] and \
                 x < self._centrallocs[tileidx][0] + self.tiledim and \
                 y >= self._centrallocs[tileidx][1] and \
-                y < self._centrallocs[tileidx][1] + self.tiledim:
+                y < self._centrallocs[tileidx][1] + self.tiledim and \
+                    tileidx < len(self.centralarea.tiles):
                 return (self.centralarea.tiles[tileidx])
         return (None)
 
