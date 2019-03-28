@@ -33,12 +33,12 @@ for line in sys.stdin:
         rslts = []
         plyrnum = 0
         continue
-    elif flds[0] == "ComboStrategyPlayer:":
+    elif flds[1] == "ComboStrategyPlayer:":
         score = flds[-1]
         plyrnum += 1
         # print("    score is " + score)
         maxscore = max(maxscore, int(score))
-        for strat in flds[1:-4]:    # end of range not inclusive
+        for strat in flds[2:-4]:    # end of range not inclusive
             rslts.append((plyrnum, strat, score))
 
 outputresults(rslts)
