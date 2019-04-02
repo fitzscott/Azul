@@ -8,10 +8,14 @@ class HumanPlayer(cp.ComputerPlayer):
         super().__init__(game, board)
 
     def taketurn(self, event=None):
+        import FinalBoardComponent as fbc
+
         assert event is not None
         # print("in human taketurn")
         disp = event[0]
         color = event[1]
-        preprow = int(event[2])
+        # Not sure how this could arrive out of range
+        preprow = min(max(0, int(event[2])),
+                      fbc.FinalBoardComponent.dimension - 1)
         tileset = self.game.chooseoption(disp, color)
         self.board.playtiles(preprow, tileset)
