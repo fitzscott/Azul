@@ -100,7 +100,7 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
         # print(str(stratnamecombos))
         return (stratnamecombos)
 
-    def randbeststrats(self, flnm="reallythebest4.txt"):
+    def randbeststrats(self, flnm="reallythebest4.txt"):        # was 5, but too slow
         mostsuccessful = self.getbestfromfile(flnm)
         stratnamecombos = self.getstratnamecombos(mostsuccessful, "+")
         choice = random.randint(0, len(stratnamecombos)-1)

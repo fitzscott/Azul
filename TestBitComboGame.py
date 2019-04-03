@@ -70,9 +70,19 @@ def rungame(bitfield):
         retval = 1
     return (retval)
 
+def tryallbitfields():
+    twos = [1]
+    for pos in range(len(csp.ComboStrategyPlayer.strats)-1):
+        twos.append(2 * twos[pos])
+    for bf in range(3, 4095):
+        if bf not in twos:
+            rungame(bf)
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         bitfield = int(sys.argv[1])
-    else:
-        bitfield = 4 + 16 + 64 + 1024 + 2048
-    rungame(bitfield)
+        rungame(bitfield)
+    # else:
+    #     bitfield = 4 + 16 + 64 + 1024 + 2048
+    # rungame(bitfield)
+    tryallbitfields()
