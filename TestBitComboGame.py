@@ -4,7 +4,7 @@ import Game as g
 import ComboStrategyPlayer as csp
 import BitComboStrategyPlayer as bcsp
 
-def rungame(bitfield):
+def rungame(bitfield, beststrats=True):
     maxturns = 300
 
     playme = g.Game(4)
@@ -18,7 +18,10 @@ def rungame(bitfield):
             plyr.assignstrats()
         else:
             plyr = csp.ComboStrategyPlayer(playme, playme.playerboard[plnum])
-            plyr.randbeststrats()
+            if beststrats:
+                plyr.randbeststrats()
+            else:
+                plyr.randstrats()
         print(plyr)
         plyrz.append(plyr)
 
@@ -81,7 +84,7 @@ def tryallbitfields():
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         bitfield = int(sys.argv[1])
-        rungame(bitfield)
+        rungame(bitfield, False)
     # else:
     #     bitfield = 4 + 16 + 64 + 1024 + 2048
     # rungame(bitfield)
