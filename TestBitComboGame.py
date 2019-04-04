@@ -66,7 +66,11 @@ def rungame(bitfield, beststrats=True):
             winstr = "Winner: "
         else:
             winstr = "Loser:  "
-        print(winstr + str(plyrz[plyridx]) + " final score = " + \
+        if plyridx == bitplayer:
+            plstr = "[BitPlayer] "
+        else:
+            plstr = "[RandPlayer] "
+        print(winstr + plstr + str(plyrz[plyridx]) + " final score = " + \
               str(plyrz[plyridx].board.score))
 
     if turnz == maxturns:
@@ -88,4 +92,5 @@ if __name__ == "__main__":
     # else:
     #     bitfield = 4 + 16 + 64 + 1024 + 2048
     # rungame(bitfield)
-    tryallbitfields()
+    else:
+        tryallbitfields()
