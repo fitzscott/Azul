@@ -79,7 +79,7 @@ def tryallbitfields():
         twos.append(2 * twos[pos])
     for bf in range(3, 4095):
         if bf not in twos:
-            rungame(bf)
+            rungame(bf, False)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
