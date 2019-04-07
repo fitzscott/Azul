@@ -1,11 +1,13 @@
 import sys
 import random
+import time
 import Game as g
 import ComboStrategyPlayer as csp
 import BitComboStrategyPlayer as bcsp
 
 def rungame(bitfield, beststrats=True):
     maxturns = 300
+    maxrt = 60.0
 
     playme = g.Game(4)
     playme.loadtiles()
@@ -31,6 +33,7 @@ def rungame(bitfield, beststrats=True):
     turnz = 0
     retval = 0
     # while cont:
+    gamestart = time.time()
     while cont and turnz < maxturns:  # real games rarely go past 5
         for idxnum in range(4):
             plnum = (firstplayer + idxnum) % 4
@@ -55,11 +58,18 @@ def rungame(bitfield, beststrats=True):
             plyrz[plnum].taketurn()
             playme.show()
             turnz += 1
+            currtime = time.time()
+            rt = currtime - gamestart
+            if rt > maxrt:
+                print("No final score, bitfield " + str(bitfield) + " ran " + str(rt))
+                return(-1)
     print(8 * "+" + "\t\tFinal scoring:")
     for idxnum in range(4):
         playme.playerboard[idxnum].finalscore()
     playme.show()
-    print("\nSummary of final scores:")
+    currtime = time.time()
+    rt = currtime - gamestart
+    print("\nSummary of game - run time " + str(rt) + ", final scores:")
     winrarr = playme.winner()
     for plyridx in range(len(plyrz)):
         if plyridx in winrarr:
@@ -67,7 +77,7 @@ def rungame(bitfield, beststrats=True):
         else:
             winstr = "Loser:  "
         if plyridx == bitplayer:
-            plstr = "[BitPlayer] "
+            plstr = "[BitPlayer:" + str(bitfield) + "] "
         else:
             plstr = "[RandPlayer] "
         print(winstr + plstr + str(plyrz[plyridx]) + " final score = " + \
