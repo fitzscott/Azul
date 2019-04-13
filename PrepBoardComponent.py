@@ -65,10 +65,15 @@ class PrepBoardComponent(brd.BoardComponent):
         :return: Boolean
         """
         retval = True
+        hasspace = False
         for pos in self.rows[rownum]:
+            if pos == "-":
+                hasspace = True
             if pos != "-" and pos != color:
                 retval = False
                 break
+        if not hasspace:
+            retval = False
         if not self._finalboard.canplace(rownum, color):
             retval = False
         return (retval)

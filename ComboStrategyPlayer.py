@@ -51,6 +51,8 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
         self._strategies.append(strtg)
 
     def taketurn(self):
+        if len(self._strategies) <= 1:
+            print(self)
         assert len(self._strategies) > 1
         opts = self.game.options()
         evals = self._strategies[0].evaluate(opts, self.board, self.game)

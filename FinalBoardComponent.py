@@ -242,6 +242,12 @@ class FinalBoardComponent(brd.BoardComponent):
                 break
         return (retval)
 
+    def copy(self, fbc2cp):
+        self.clear()
+        for rowidx in range(len(fbc2cp.rows)):
+            self.row[rowidx] = [fbc2cp.rows[rowidx][cidx]
+                                for cidx in range(len(fbc2cp.rows[rowidx]))]
+
 if __name__ == "__main__":
    import doctest
 

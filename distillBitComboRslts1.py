@@ -39,7 +39,7 @@ for line in sys.stdin:
         if "Rand" in flds[1]:
             bitflg = "0"
         else:
-            bitflg = "1"
+            bitflg = flds[1].split(":")[1][0:-1]
         # print("    score is " + score)
         maxscore = max(maxscore, int(score))
         for strat in flds[3:-4]:    # end of range not inclusive

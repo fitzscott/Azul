@@ -13,6 +13,7 @@ import MinPenaltyStrategy as mps
 import DisplayHighColorStrategy as dhcs
 import AtMostFitStrategy as amfs
 import CentralPositionStrategy as cps
+import TopRowsStrategy as trs
 
 
 class SmarterGraphicGame(gg.GraphicGame):
@@ -24,7 +25,11 @@ class SmarterGraphicGame(gg.GraphicGame):
               efs.ExactFitStrategy, frs.FillRowStrategy, fcs.FillColumnStrategy,  # 2 3 4
               ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,  # 5 6
               mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,  # 7 8
-              amfs.AtMostFitStrategy, cps.CentralPositionStrategy]  # 9 10
+              amfs.AtMostFitStrategy, cps.CentralPositionStrategy,   # 9 10
+              trs.TopRowsStrategy]
+
+    def __init__(self, numplayers=4):
+        super().__init__(numplayers)
 
     def getBestFromFile(self, numstrats):
         flnm = "bestcombo_" + str(numstrats) + ".txt"
@@ -38,7 +43,7 @@ class SmarterGraphicGame(gg.GraphicGame):
         fl = open(flnm)
         retval = "\n".join(fl.readlines())
         fl.close()
-        print("Really best:\n" + str(retval))
+        # print("Really best:\n" + str(retval))
         return (retval)
 
     def getstratnamecombos(self, mostsuccessful, numstrats, delim):
@@ -66,7 +71,7 @@ class SmarterGraphicGame(gg.GraphicGame):
                 if stratcls.__name__ == stratname:
                     plyr.addstrategy(stratcls())
                     break
-        print("Player " + str(pidx + 1) + ":" + ",".join(plyr.strstrategies))
+        print("Player " + str(pidx + 1) + ": " + ",".join(plyr.strstrategies))
         self._players.append(plyr)
 
     def addCompPlayers(self, numstrats=0):
@@ -105,7 +110,7 @@ class SmarterGraphicGame(gg.GraphicGame):
             delim = " + "
             numstrats = 3
         else:
-            mostsuccessful = self.getReallyBestFromFile(80)
+            mostsuccessful = self.getReallyBestFromFile(8)
             # mostsuccessful = self.getBestFromFile(numstrats)
             # print(mostsuccessful)
             delim = "+"
@@ -126,13 +131,13 @@ class SmarterGraphicGame(gg.GraphicGame):
             # topX = min(5, len(stratnamecombos)-1)
             topX = len(stratnamecombos)-1
             choice = random.randint(0, topX)
-            print("Choice " + str(choice) + " is " + str(stratnamecombos[choice]))
+            # print("Choice " + str(choice) + " is " + str(stratnamecombos[choice]))
             for stratname in stratnamecombos[choice]:
                 for stratcls in SmarterGraphicGame.strats:
                     if stratcls.__name__ == stratname:
                         plyr.addstrategy(stratcls())
                         break
-            print("Player " + str(pidx+1) + ":" + ",".join(plyr.strstrategies))
+            print("Player " + str(pidx+1) + " = " + ", ".join(plyr.strstrategies))
             self._players.append(plyr)
 
     def replaceWithHuman(self, plnum=0):
@@ -144,9 +149,9 @@ class SmarterGraphicGame(gg.GraphicGame):
 if __name__ == "__main__":
     gg = SmarterGraphicGame()
     # gg.addCompPlayers(6)
-    for plnum in range(4):
+    # for plnum in range(4):
         # gg.assigntoptoplayer(plnum, plnum+4)    # 4, 5, 6, 7 strategies competing
-        gg.addCompPlayers(-1)                     # new list of best
+    gg.addCompPlayers(-1)                     # new list of best
     gg.replaceWithHuman(random.randint(0,3))
-    gg.playbymyself(5)
+    gg.playbymyself(2)
 

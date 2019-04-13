@@ -15,6 +15,7 @@ class PlayerBoard():
         self._prepboard = pbc.PrepBoardComponent(self._finalboard, self._penalty)
         self._score = 0
         self._firstplayer = False
+        self._projfinalboard = fbc.FinalBoardComponent()
 
     @property
     def finalboard(self):
@@ -40,6 +41,10 @@ class PlayerBoard():
     def firstplayer(self, val):
         self._firstplayer = val
 
+    @property
+    def projfinalboard(self):
+        return(self._projfinalboard)
+
     def __str__(self):
         retstr = ""
         fbspl = str(self.finalboard).split("\n")
@@ -62,10 +67,15 @@ class PlayerBoard():
             if tile == "1":
                 self._penalty.addtile(tile)
                 self._firstplayer = True
-            elif not self._prepboard.canplace(rownum, tiles[0]):
+            elif not self._prepboard.canplace(rownum, tile):
                 self._penalty.addtile(tile)
             else:
                 self._prepboard.place(rownum, tile)
+                # Update the projected final board immediately if full
+                if self._prepboard.rowfull(rownum):
+                    # print("adding tile " + tile + " to projected board row " \
+                    #       + str(rownum))
+                    self._projfinalboard.place(rownum, tile)
 
     def movescore(self, box):
         for idx in range(len(self._prepboard.rows)):

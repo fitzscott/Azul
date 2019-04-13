@@ -13,5 +13,8 @@ class BoardComponent():
     def rows(self):
         return (self._rows)
 
+    def clear(self):
+        self._rows = [[], [], [], [], []]
+
     def __str__(self):
         return ("generic board")

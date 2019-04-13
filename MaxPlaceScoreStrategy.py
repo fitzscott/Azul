@@ -12,7 +12,8 @@ class MaxPlaceScoreStrategy(pcs.PlayableColorStrategy):
         import Strategy
 
         scores = {}
-        fb = board.finalboard
+        # fb = board.finalboard
+        fb = board.projfinalboard
         for color in fbc.FinalBoardComponent.colororder:
             for rownum in range(fbc.FinalBoardComponent.dimension):
                 columnnum = fb.getcolumnnum(rownum, color)
