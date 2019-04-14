@@ -153,5 +153,5 @@ if __name__ == "__main__":
         # gg.assigntoptoplayer(plnum, plnum+4)    # 4, 5, 6, 7 strategies competing
     gg.addCompPlayers(-1)                     # new list of best
     gg.replaceWithHuman(random.randint(0,3))
-    gg.playbymyself(2)
+    gg.playbymyself(10)
 

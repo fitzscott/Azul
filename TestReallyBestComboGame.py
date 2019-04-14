@@ -1,6 +1,6 @@
 import sys
 import random
-import Game as g
+import TestBestComboGame as tbcg
 # import SingleStrategyPlayer as ssp
 import ComboStrategyPlayer as csp
 import MostPrevalentColorStrategy as mpcs
@@ -16,22 +16,15 @@ import AtMostFitStrategy as amfs
 import CentralPositionStrategy as cps
 import TopRowsStrategy as trs
 
-class TestBestComboGame(g.Game):
-    
-    strats = [mpcs.MostPrevalentColorStrategy, fus.FinishUnfinishedStrategy,  # 0 1
-              efs.ExactFitStrategy, frs.FillRowStrategy, fcs.FillColumnStrategy,  # 2 3 4
-              ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,  # 5 6
-              mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,  # 7 8
-              amfs.AtMostFitStrategy, cps.CentralPositionStrategy,  # 9 10
-              trs.TopRowsStrategy]
-    
+
+class TestReallyBestComboGame(tbcg.TestBestComboGame):
+
     def __init__(self, numplayers):
         super().__init__(numplayers)
         self._plyrz = []
         self._topcombos = []
 
-    def getBestFromFile(self, numstrats):
-        flnm = "bestcombo_" + str(numstrats) + ".txt"
+    def getBestFromFile(self, flnm):
         fl = open(flnm)
         retval = "\n".join(fl.readlines())
         fl.close()
@@ -48,56 +41,39 @@ class TestBestComboGame(g.Game):
     @topcombos.setter
     def topcombos(self, val):
         self._topcombos = val
-    
-    def getstratnamecombos(self, mostsuccessful, numstrats, delim):
+
+    def getstratnamecombos(self, mostsuccessful, delim):
         stratnamecombos = []
-    
+
         for stratset in mostsuccessful.strip().split("\n"):
             stratnames = stratset.split(":")[0].strip().split(delim)
-            if len(stratnames) == numstrats:
+            if len(stratnames) > 1:
                 stratnamecombos.append(stratnames)
                 # print("!".join(stratnames))
         # print(str(stratnamecombos))
         return (stratnamecombos)
-    
-    
-    def assembletopcombos(self, cnt, strbgn, strend):
+
+    def assembletopcombos(self, flnm):
         """
         Take top X combos from each strategy count & assemble in a select list.
         :param cnt: Top X
         :return:
         """
-        self.topcombos = []
-        for stratcnt in range(strbgn, strend+1):
-            mostsuccessful = self.getBestFromFile(stratcnt)
-            delim = "+"
-            self.topcombos.extend(self.getstratnamecombos(mostsuccessful,
-                                                          stratcnt,
-                                                          delim)[0:cnt])
+        mostsuccessful = self.getBestFromFile(flnm)
+        self.topcombos = self.getstratnamecombos(mostsuccessful, "+")
         # print(str(self.topcombos))
 
-    # def assigntoptoplayer(self, pidx, stratcnt):
-    #     plyr = csp.ComboStrategyPlayer(self, self.playerboard[pidx])
-    #     stratcombonms = self.gettopcombo(stratcnt)[0]
-    #     for stratname in stratcombonms:
-    #         for stratcls in TestBestComboGame.strats:
-    #             if stratcls.__name__ == stratname:
-    #                 plyr.addstrategy(stratcls())
-    #                 break
-    #     print("Player " + str(pidx + 1) + ":" + ",".join(plyr.strstrategies))
-    #     self._plyrz.append(plyr)
-
-    def rungame(self, topx=2, strst=2, stren=10):
+    def rungame(self, flnm):
         maxturns = 300
 
-        self.assembletopcombos(topx, strst, stren)
+        self.assembletopcombos(flnm)
         self.loadtiles()
         for plnum in range(len(self.playerboard)):
             plyr = csp.ComboStrategyPlayer(self, self.playerboard[plnum])
-            comboidx = random.randint(0, len(self.topcombos)-1)
+            comboidx = random.randint(0, len(self.topcombos) - 1)
             # print("Chose combo " + str(self.topcombos[comboidx]))
             for stratname in self.topcombos[comboidx]:
-                for stratcls in TestBestComboGame.strats:
+                for stratcls in tbcg.TestBestComboGame.strats:
                     if stratcls.__name__ == stratname:
                         plyr.addstrategy(stratcls())
             print(plyr)
@@ -151,14 +127,11 @@ class TestBestComboGame(g.Game):
             retval = 1
         return (retval)
 
+
 if __name__ == "__main__":
-    tbcg = TestBestComboGame(4)
-    if len(sys.argv) >= 3:
-        st = int(sys.argv[1])
-        en = int(sys.argv[2])
-        tx = 2
+    trbcg = TestReallyBestComboGame(4)
+    if len(sys.argv) >= 2:
+        flnm = int(sys.argv[1])
     else:
-        tx = 230
-        st = 66
-        en = 66
-    tbcg.rungame(tx, st, en)
+        flnm = "reallythebest8.txt"
+    trbcg.rungame(flnm)
