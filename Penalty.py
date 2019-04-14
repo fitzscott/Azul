@@ -59,13 +59,14 @@ class Penalty(ta.TileArea):
     def projectpenalty(self, numtiles):
         # Figure out what the penalty would be for adding numtiles.
         penalty = 0
+        penlen = len(Penalty.penalties)
         for tileidx in range(len(self.tiles)):
+            if numtiles <= 0 or tileidx >= penlen:
+                break
             if self.tiles[tileidx] == "-":
                 continue
             penalty += Penalty.penalties[tileidx]
             numtiles -= 1
-            if numtiles <= 0:
-                break
         return (penalty)
 
     def __str__(self):
