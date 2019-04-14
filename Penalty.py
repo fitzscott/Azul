@@ -56,6 +56,18 @@ class Penalty(ta.TileArea):
         super().clear()
         self._firstplayer = False
 
+    def projectpenalty(self, numtiles):
+        # Figure out what the penalty would be for adding numtiles.
+        penalty = 0
+        for tileidx in range(len(self.tiles)):
+            if self.tiles[tileidx] == "-":
+                continue
+            penalty += Penalty.penalties[tileidx]
+            numtiles -= 1
+            if numtiles <= 0:
+                break
+        return (penalty)
+
     def __str__(self):
         penlen = len(self.tiles)
         retstr = ""

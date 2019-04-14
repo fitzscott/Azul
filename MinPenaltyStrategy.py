@@ -6,8 +6,11 @@ class MinPenaltyStrategy(pcs.PlayableColorStrategy):
     """
     def evaluate(self, options, board, game = None):
         import Strategy
+        import Penalty
 
         prep = board.prepboard
+        pen = board.penalty
+
         negpen = []
         for opt in options:
             disp = opt[0]
@@ -24,8 +27,10 @@ class MinPenaltyStrategy(pcs.PlayableColorStrategy):
                 for color in colorcounts.keys():
                     if prep.canplace(rownum, color):
                         # All moves without penalty are ranked the same.
-                        penalty = min(slots - colorcounts[color], 0) - \
-                                  firstplayerpenalty
+                        penaltycnt = min(slots - colorcounts[color], 0) - \
+                                     firstplayerpenalty
+                        # Keeping the penalty negative for now
+                        penalty = -1 * pen.projectpenalty(-1 * penaltycnt)
                         negpen.append((disp + color + str(rownum), penalty))
         # print("negative penalties = " + str(negpen))
         if len(negpen) == 0:
