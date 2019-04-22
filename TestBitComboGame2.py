@@ -5,7 +5,7 @@ import Game as g
 import ComboStrategyPlayer as csp
 import BitComboStrategyPlayer as bcsp
 
-def rungame(bitfields):
+def rungame(bitfields, weigh=False):
     maxturns = 300
     maxrt = 60.0
 
@@ -17,6 +17,8 @@ def rungame(bitfields):
         plyr = bcsp.BitComboStrategyPlayer(playme, playme.playerboard[plnum],
                                            bitfields[plnum])
         plyr.assignstrats()
+        if weigh:
+            plyr.makeweight()
         print(plyr)
         plyrz.append(plyr)
 
@@ -70,7 +72,8 @@ def rungame(bitfields):
             winstr = "Winner: "
         else:
             winstr = "Loser:  "
-        plstr = "[BitPlayer:" + str(bitfields[plyridx]) + "] "
+        plstr = "[BitPlayer:" + str(bitfields[plyridx]) + ":" + \
+                plyrz[plyridx].wgtstr() + "] "
         print(winstr + plstr + str(plyrz[plyridx]) + " final score = " + \
               str(plyrz[plyridx].board.score))
 
@@ -78,7 +81,7 @@ def rungame(bitfields):
         retval = 1
     return (retval)
 
-def tryallbitfields():
+def tryallbitfields(weigh=False):
     twos = [1]
     for pos in range(len(csp.ComboStrategyPlayer.strats)-1):
         twos.append(2 * twos[pos])
@@ -90,12 +93,16 @@ def tryallbitfields():
             pickbitidx = random.randint(0, len(legitbits)-1)
             plyrbits.append(legitbits[pickbitidx])
             legitbits.remove(legitbits[pickbitidx])
-        rungame(plyrbits)
+        rungame(plyrbits, weigh)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         iters = int(sys.argv[1])
     else:
         iters = 1
+    if len(sys.argv) > 2:
+        weigh = True
+    else:
+        weigh = False
     for runz in range(iters):
-        tryallbitfields()
+        tryallbitfields(weigh)

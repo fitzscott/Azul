@@ -50,14 +50,19 @@ class Strategy():
                     maxrank = max(maxrank, e1rank + e2rank)
         # For the evals that didn't match, add them on the end of the
         # returned combination.
+        # Previously, we were assigning maxrank to the rank of the unmatched
+        # evaluations, but that doesn't seem to make sense.  Instead, its
+        # rank from the previous evaluation should be applied.
         combostripped = [co[0:3] for co in combo]
         for e in eval1:
             if e[0:3] not in combostripped:
-                maxrank += 1
-                combo.append(e[0:3] + "_" + str(maxrank))
+                # maxrank += 1
+                # combo.append(e[0:3] + "_" + str(maxrank))
+                combo.append(e)
         for e in eval2:
             if e[0:3] not in combostripped:
-                maxrank += 1
-                combo.append(e[0:3] + "_" + str(maxrank))
+                # maxrank += 1
+                # combo.append(e[0:3] + "_" + str(maxrank))
+                combo.append(e)
         combo.sort(key=getcount)    # higher is better
         return(combo)

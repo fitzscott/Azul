@@ -1,12 +1,15 @@
 import ComboStrategyPlayer as csp
+import WeightedComboStrategyPlayer as wcsp
 
-class BitComboStrategyPlayer(csp.ComboStrategyPlayer):
+class BitComboStrategyPlayer(wcsp.WeightedComboStrategyPlayer):
     """
     Accept an integer as a bitfield indicating which strategies should be
     included in the combination.
     """
 
     def __init__(self, game, board, bitfld):
+        import ComboStrategyPlayer as csp
+
         super().__init__(game, board)
         self._stratbits = bitfld
         # Is there a way to do a list comprehension for this?
@@ -22,7 +25,7 @@ class BitComboStrategyPlayer(csp.ComboStrategyPlayer):
     def bitfield(self, val):
         self._stratbits = val
 
-    def assignstrats(self, bitfld=0):
+    def assignstrats(self, bitfld=0, uniformweight=True):
         if bitfld == 0:
             bf = self._stratbits
         else:
@@ -30,6 +33,9 @@ class BitComboStrategyPlayer(csp.ComboStrategyPlayer):
         for sidx in range(len(csp.ComboStrategyPlayer.strats)):
             if self._twos[sidx] & bf > 0:
                 self.addstrategy(csp.ComboStrategyPlayer.strats[sidx]())
+        if uniformweight:
+            weights = [1 for _ in range(len(self.strategies))]
+            self.weights = weights
 
 if __name__ == "__main__":
     bcsp = BitComboStrategyPlayer(None, None, 7)

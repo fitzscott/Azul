@@ -110,7 +110,7 @@ class SmarterGraphicGame(gg.GraphicGame):
             delim = " + "
             numstrats = 3
         else:
-            mostsuccessful = self.getReallyBestFromFile(8)
+            mostsuccessful = self.getReallyBestFromFile("80pct")
             # mostsuccessful = self.getBestFromFile(numstrats)
             # print(mostsuccessful)
             delim = "+"
