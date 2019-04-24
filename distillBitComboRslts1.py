@@ -14,8 +14,9 @@ def outputresults(rslts):
         print("|".join([str(gamenum), str(result[0]), result[1], \
                         str(result[2]), win, result[3]]))
 
-if len(sys.argv) == 2:
+if len(sys.argv) >= 2:
     gamenum = int(sys.argv[1])
+getwgt = len(sys.argv) == 3
 
 for line in sys.stdin:
     # print("line is " + line)
@@ -39,7 +40,10 @@ for line in sys.stdin:
         if "Rand" in flds[1]:
             bitflg = "0"
         else:
-            bitflg = flds[1].split(":")[1][0:-1]
+            if not getwgt:
+                bitflg = flds[1].split(":")[1][0:-1]
+            else:
+                bitflg = "|".join(flds[1][0:-1].split(":")[1:])
         # print("    score is " + score)
         maxscore = max(maxscore, int(score))
         for strat in flds[3:-4]:    # end of range not inclusive
