@@ -33,7 +33,7 @@ for line in sys.stdin:
         rslts = []
         plyrnum = 0
         continue
-    elif flds[1] == "ComboStrategyPlayer:":
+    elif "ComboStrategyPlayer:" in flds[1]:
         score = flds[-1]
         plyrnum += 1
         # print("    score is " + score)
