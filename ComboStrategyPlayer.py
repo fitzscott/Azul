@@ -111,3 +111,9 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
                 if stratcls.__name__ == stratname:
                     self.addstrategy(stratcls())
                     break
+
+    def addstratbystr(self, stratstr):
+        for stratcls in ComboStrategyPlayer.strats:
+            if stratcls.__name__ == stratstr:
+                self.addstrategy(stratcls())
+                break

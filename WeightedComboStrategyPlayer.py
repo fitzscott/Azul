@@ -26,6 +26,9 @@ class WeightedComboStrategyPlayer(csp.ComboStrategyPlayer):
         wgt = w.Weight(self.strategies)
         self.weights = wgt.randweight()
 
+    def stdweight(self):
+        self._weights = [r for r in range(len(self.strategies), 0, -1)]
+
     def wgtstr(self):
         # Probably should be a __str__ method in the Weight class
         wstr = ""
