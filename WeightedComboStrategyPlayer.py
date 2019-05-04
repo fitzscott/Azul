@@ -8,7 +8,7 @@ class WeightedComboStrategyPlayer(csp.ComboStrategyPlayer):
     strategies.
     """
 
-    maxwgtcnt = 6
+    maxwgtcnt = 5       # Was 6, but still too slow
 
     def __init__(self, game, board, weights=None):
         super().__init__(game, board)
@@ -45,8 +45,8 @@ class WeightedComboStrategyPlayer(csp.ComboStrategyPlayer):
         return(wstr)
 
     # def __str__(self):
-    #    return (super().__str__() + "_" + self.wgtstr())
-    
+    #    return (self.wgtstr() + "_" + super().__str__() )
+
     def taketurn(self):
         """
         Copy & paste re-use - ick.
