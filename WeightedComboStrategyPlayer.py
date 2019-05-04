@@ -8,6 +8,8 @@ class WeightedComboStrategyPlayer(csp.ComboStrategyPlayer):
     strategies.
     """
 
+    maxwgtcnt = 6
+
     def __init__(self, game, board, weights=None):
         super().__init__(game, board)
         self._weights = weights
@@ -27,7 +29,13 @@ class WeightedComboStrategyPlayer(csp.ComboStrategyPlayer):
         self.weights = wgt.randweight()
 
     def stdweight(self):
-        self._weights = [r for r in range(len(self.strategies), 0, -1)]
+        # We only want a max of 6 "heavy" weights, with the rest being 1.
+        # So 9 would be 6 5 4 3 2 1 1 1 1 and
+        #    7 would be 6 5 4 3 2 1 1 and
+        #    4 would be 4 3 2 1.
+        stratcnt = len(self.strategies)
+        maxwgt = min(WeightedComboStrategyPlayer.maxwgtcnt, stratcnt)
+        self._weights = [max(r, 1) for r in range(maxwgt, maxwgt - stratcnt, -1)]
 
     def wgtstr(self):
         # Probably should be a __str__ method in the Weight class
@@ -36,6 +44,9 @@ class WeightedComboStrategyPlayer(csp.ComboStrategyPlayer):
             wstr += str(wgt)
         return(wstr)
 
+    # def __str__(self):
+    #    return (super().__str__() + "_" + self.wgtstr())
+    
     def taketurn(self):
         """
         Copy & paste re-use - ick.

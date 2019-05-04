@@ -100,12 +100,19 @@ def tryallpermus(stratstr, randorbest, numiters):
             numiters = 20
         else:
             numiters = 10
+    # Don't include all permutations at higher counts - too many.
+    # We'll take top X & set the rest to weight 1.
+    # Here, only get permutations for those top X, and we'll tack on the rest.
+    wgtcnt = min(len(stratstrlist), wcsp.WeightedComboStrategyPlayer.maxwgtcnt)
     stratstrpermus = [stratstr for stratstr in
-                      itertools.permutations(stratstrlist,
-                                             len(stratstrlist))]
+                      itertools.permutations(stratstrlist, wgtcnt)]
     for ssp in stratstrpermus:
+        ssplist = [permu for permu in ssp]
+        for stratstr in stratstrlist:
+            if stratstr not in ssplist:
+                ssplist.append(stratstr)
         for gameno in range(numiters):
-            rungame(ssp, randorbest, gameno)
+            rungame(ssplist, randorbest, gameno)
 
 if __name__ == "__main__":
     # Parameters:   Strategy combo we want to test for its permutations
