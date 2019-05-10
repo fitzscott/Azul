@@ -219,21 +219,21 @@ class GraphicGame(g.Game):
             dist = math.sqrt((factx - x) ** 2 + (facty - y) ** 2)
             if dist <= self.factoryradius:
                 tiles = self.display[factid - 1].tiles
-                if len(tiles) < 4:
+                if len(tiles) < 1:
                     break
                 # Tiles 0 & 2 are left of the X value, 1 & 3 right.
                 # Tiles 0 & 1 are above the Y value, 2 & 3 below.
                 if x <= factx:
                     if y <= facty:
-                        tile = tiles[0]
+                        tileidx = 0
                     else:
-                        tile = tiles[2]
+                        tileidx = 2
                 else:
                     if y <= facty:
-                        tile = tiles[1]
+                        tileidx = 1
                     else:
-                        tile = tiles[3]
-                retval = (factid, tile)
+                        tileidx = 3
+                retval = (factid, tiles[min(tileidx, len(tiles)-1)])
         return (retval)
 
     def findcentral(self, x, y):
