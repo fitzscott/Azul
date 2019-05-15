@@ -38,7 +38,7 @@ class AtLeastFitStrategy(pcs.PlayableColorStrategy):
         if len(atleastfit) == 0:
             return (super().evaluate(options, board, game))
         atleastfit.sort(key=Strategy.getcount)
-        print("At least fit evals: " + str(atleastfit))
+        # print("At least fit evals: " + str(atleastfit))
         return(atleastfit)
 
     def recommend(self, options, board, game = None):
