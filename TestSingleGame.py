@@ -15,6 +15,8 @@ import DisplayHighColorStrategy as dhcs
 import AtMostFitStrategy as amfs
 import CentralPositionStrategy as cps
 import TopRowsStrategy as trs
+import MostPrevalentBagColorStrategy as mpbcs
+import AtLeastFitStrategy as alfs
 
 def rungame():
     maxturns = 300
@@ -22,8 +24,10 @@ def rungame():
     playme = g.Game(4)
     playme.loadtiles()
     plyrz = []
-    strats = [efs.ExactFitStrategy, trs.TopRowsStrategy,
-               fcs.FillColumnStrategy, ccs.CompleteColorStrategy]
+    strats = [alfs.AtLeastFitStrategy, trs.TopRowsStrategy,
+               fcs.FillColumnStrategy, mpbcs.MostPrevalentBagColorStrategy]
+    # strats = [efs.ExactFitStrategy, trs.TopRowsStrategy,
+    #            fcs.FillColumnStrategy, ccs.CompleteColorStrategy]
     # strats = [efs.ExactFitStrategy, frs.FillRowStrategy,
     #            fcs.FillColumnStrategy, ccs.CompleteColorStrategy]
     # strats = [mpss.MaxPlaceScoreStrategy, frs.FillRowStrategy,

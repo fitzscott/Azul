@@ -3,25 +3,6 @@ import random
 import Game as g
 # import SingleStrategyPlayer as ssp
 import ComboStrategyPlayer as csp
-import MostPrevalentColorStrategy as mpcs
-import FinishUnfinishedStrategy as fus
-import ExactFitStrategy as efs
-import FillRowStrategy as frs
-import FillColumnStrategy as fcs
-import CompleteColorStrategy as ccs
-import MaxPlaceScoreStrategy as mpss
-import MinPenaltyStrategy as mps
-import DisplayHighColorStrategy as dhcs
-import AtMostFitStrategy as amfs
-import CentralPositionStrategy as cps
-import TopRowsStrategy as trs
-
-strats = [mpcs.MostPrevalentColorStrategy, fus.FinishUnfinishedStrategy,
-          efs.ExactFitStrategy, frs.FillRowStrategy, fcs.FillColumnStrategy,
-          ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,
-          mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,
-          amfs.AtMostFitStrategy, cps.CentralPositionStrategy,
-          trs.TopRowsStrategy]
 
 def rungame(minstrats=2, maxstrats=6):
     maxturns = 300

@@ -15,7 +15,7 @@ class SingleStrategyPlayer(cp.ComputerPlayer):
         """
         # get my options from the game
         opts = self.game.options()
-        rec_opt = self._strategy.recommend(opts, self.board)
+        rec_opt = self._strategy.recommend(opts, self.board, self.game)
         if rec_opt is not None:
             self.implementstrategy(rec_opt)
         else:

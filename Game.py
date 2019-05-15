@@ -29,6 +29,7 @@ class Game():
         self._playerboards = []
         for cnt in range(self._numplayers):
             self._playerboards.append(pb.PlayerBoard())
+        self._roundnum = 0
 
     def loadtiles(self):
         """
@@ -115,6 +116,10 @@ class Game():
     def numplayers(self):
         return (self._numplayers)
 
+    @property
+    def roundnum(self):
+        return (self._roundnum)
+
     def turnover(self):
         """
         turnover - when all the display areas and the central area are empty,
@@ -124,8 +129,11 @@ class Game():
         for disp in self.display:
             if len(disp.tiles) > 0:
                 return(False)
-        return (len(self.centralarea.tiles) == 0 or \
-                self.centralarea.onlyplayer1())
+        retval = len(self.centralarea.tiles) == 0 or \
+                 self.centralarea.onlyplayer1()
+        if retval:      # Turn over => increment round number
+            self._roundnum += 1
+        return (retval)
 
     def show(self):
         print(self)

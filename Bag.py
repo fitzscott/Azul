@@ -45,6 +45,12 @@ class Bag(ta.TileArea):
             self.tiles.remove(tile)
         return(True)
 
+    def colorcounts(self):
+        counts = {}
+        for tile in self.tiles:
+            counts[tile] = counts.get(tile, 0) + 1
+        return(counts)
+
 if __name__ == "__main__":
     import TileArea as ta
     import Pad as p
@@ -55,8 +61,10 @@ if __name__ == "__main__":
         for color in "YKBRW":
             bag.addtile(color)
             box.addtile(color)
+    print("color counts is " + str(bag.colorcounts()) + ", now loading pad:")
     bag.loadpad(pad, box)
     print("pad now has " + str(pad.tiles))
+    print("color counts now " + str(bag.colorcounts()))
 
     import doctest
     doctest.testmod()

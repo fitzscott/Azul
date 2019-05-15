@@ -13,6 +13,8 @@ import DisplayHighColorStrategy as dhcs
 import AtMostFitStrategy as amfs
 import CentralPositionStrategy as cps
 import TopRowsStrategy as trs
+import MostPrevalentBagColorStrategy as mpbcs
+import AtLeastFitStrategy as alfs
 
 
 class ComboStrategyPlayer(cp.ComputerPlayer):
@@ -25,7 +27,8 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
               ccs.CompleteColorStrategy, mpss.MaxPlaceScoreStrategy,
               mps.MinPenaltyStrategy, dhcs.DisplayHighColorStrategy,
               amfs.AtMostFitStrategy, cps.CentralPositionStrategy,
-              trs.TopRowsStrategy]
+              trs.TopRowsStrategy, mpbcs.MostPrevalentBagColorStrategy,
+              alfs.AtLeastFitStrategy]
 
     def __init__(self, game, board):
         super().__init__(game, board)
