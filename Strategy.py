@@ -64,5 +64,5 @@ class Strategy():
                 # maxrank += 1
                 # combo.append(e[0:3] + "_" + str(maxrank))
                 combo.append(e)
-        combo.sort(key=getcount)    # higher is better
+        combo.sort(key=getcount2, reverse=True)    # higher is better
         return(combo)

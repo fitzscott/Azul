@@ -23,7 +23,7 @@ class MostPrevalentBagColorStrategy(pcs.PlayableColorStrategy):
                 rankval = prevailingcolors[color] - mincount + 1
                 modplay = potentialplay[0:3] + "_" + str(rankval)
                 evals.append(modplay)
-        evals.sort(key=strat.getcount)
+        evals.sort(key=strat.getcount2, reverse=True)
         # print("MPBCS evals = " + str(evals))
         return(evals)
 

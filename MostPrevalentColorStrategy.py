@@ -19,7 +19,7 @@ class MostPrevalentColorStrategy(pcs.PlayableColorStrategy):
                 prevailingcolors[color] = prevailingcolors.get(color, 0) + 1
         prevailinglist = [key + "_" + str(prevailingcolors[key])
                     for key in prevailingcolors.keys()]
-        prevailinglist.sort(key=strat.getcount)
+        prevailinglist.sort(key=strat.getcount2, reverse=True)
         # print("prevalence: " + str(prevailinglist))
         evals = []
         for prevcol in prevailinglist:

@@ -32,6 +32,6 @@ class CentralPositionStrategy(pcs.PlayableColorStrategy):
         if len(evals) == 0:
             return (super().evaluate(options, board, game))
 
-        evals.sort(key=strat.getcount)
+        evals.sort(key=strat.getcount2, reverse=True)
         # print("Central position evals = "+ str(evals))
         return (evals)

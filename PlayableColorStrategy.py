@@ -27,7 +27,7 @@ class PlayableColorStrategy(strat.Strategy):
         for ev in evals:
             evcounts[ev] = evcounts.get(ev, 0) + 1
         evlist = [key + "_" + str(evcounts[key]) for key in evcounts.keys()]
-        evlist.sort(key=strat.getcount)
+        evlist.sort(key=strat.getcount2, reverse=True)
         return(evlist)
 
     def recommend(self, options, board, game = None):

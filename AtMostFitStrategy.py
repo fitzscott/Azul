@@ -29,7 +29,7 @@ class AtMostFitStrategy(pcs.PlayableColorStrategy):
                                         "_" + str(colorcount[ckey]))
         if len(atmostfit) == 0:
             return (super().evaluate(options, board, game))
-        atmostfit.sort(key=Strategy.getcount)
+        atmostfit.sort(key=Strategy.getcount2, reverse=True)
         # print("At most fit evals: " + str(atmostfit))
         return(atmostfit)
 
