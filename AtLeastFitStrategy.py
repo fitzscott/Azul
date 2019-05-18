@@ -29,7 +29,8 @@ class AtLeastFitStrategy(pcs.PlayableColorStrategy):
                 colorcount[color] = colorcount.get(color, 0) + 1
             for ckey in colorcount.keys():  # ckey is color
                 for slotidx in range(len(slots)):
-                    overflow = colorcount[ckey] - slots[slotidx]
+                    overflow = min(self.defaultweight,
+                                   colorcount[ckey] - slots[slotidx])
                     if overflow >= 0 and \
                             board.prepboard.canplace(slotidx, ckey):
                         weight = (self.defaultweight - overflow) * mult

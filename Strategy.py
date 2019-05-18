@@ -46,6 +46,7 @@ class Strategy():
                 if e1[0:3] == e2[0:3]:
                     e1rank = int(e1.split('_')[1])
                     e2rank = int(e2.split('_')[1])
+                    assert e1rank >= 0 and e2rank >= 0
                     combo.append(e1[0:3] + "_" + str(e1rank + e2rank))
                     maxrank = max(maxrank, e1rank + e2rank)
         # For the evals that didn't match, add them on the end of the
