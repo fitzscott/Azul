@@ -91,7 +91,7 @@ def tackongames(stratstr, iters, flnm):
     wgtfile.close()
     fullwgtset = [wc.strip().split(":")[0].split("+")
                   for wc in wgtcombos
-                  if len(wc) > 0]
+                  if len(wc) > 0 and stratstr not in wc]
     print("full set of weighted straetegies:\n" + str(fullwgtset))
     for gameno in range(iters):
         stratsset = []
