@@ -7,6 +7,9 @@ class HumanPlayer(cp.ComputerPlayer):
     def __init__(self, game, board):
         super().__init__(game, board)
 
+    def __str__(self):
+        return (self.__class__.__name__ + ": WhatStrategy Dunno")
+
     def taketurn(self, event=None):
         import FinalBoardComponent as fbc
 

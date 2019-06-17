@@ -48,9 +48,12 @@ if __name__ == "__main__":
         flnm = sys.argv[2]
     else:
         flnm = "bestwgtd01.txt"
+    if len(sys.argv) > 3 and sys.argv[3] == "1":
+        saverslts = True
+    else:
+        saverslts = False
 
     gg = SmartWgtGraphicGame()
     gg.addCompPlayers(flnm)
     gg.replaceWithHuman(random.randint(0, 3))
-    gg.playbymyself(iters)
-
+    gg.playbymyself(iters, saverslts)

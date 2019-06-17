@@ -2,6 +2,8 @@ import pygame
 import Game as g
 import sys
 import math
+import datetime as dt
+
 
 class GraphicGame(g.Game):
     """
@@ -308,7 +310,23 @@ class GraphicGame(g.Game):
         self.drawcentral()
         pygame.display.flip()
 
-    def playbymyself(self, iters=1):
+    def saveresults(self):
+        currdttm = dt.datetime.today()
+        currmo = currdttm.strftime("%y%m")
+        rsltfl = open("rslts" + currmo + ".txt", "a")
+        gamestr = currdttm.strftime("%d%H%M%S")
+        winrarr = self.winner()
+        for plyridx in range(self.numplayers):
+            if plyridx in winrarr:
+                winstr = "Winner: "
+            else:
+                winstr = "Loser:  "
+            plyr = self._players[plyridx]
+            rsltfl.write(gamestr + " " + winstr + str(plyr) + " final score = " + \
+                  str(plyr.board.score) + "\n")
+        rsltfl.close()
+
+    def playbymyself(self, iters=1, saveRslts=False):
         """
         Run through event loop, which, for the computer players, doesn't
         involve any keyboard, mouse, etc. input.
@@ -395,6 +413,8 @@ class GraphicGame(g.Game):
                 pygame.display.flip()
 
             print("Game " + str(gamecnt) + " completed.")
+            if saveRslts:
+                self.saveresults()
             pygame.time.wait(10000)
             self.reset()
             self.loadtiles()
