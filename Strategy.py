@@ -43,6 +43,10 @@ class Strategy():
         maxrank = -1
         for e1 in eval1:
             for e2 in eval2:
+                if e1.split('_')[1] == '':
+                    print("Error in Strategy. e1 & e2:")
+                    print("    e1:" + str(e1))
+                    print("    e2:" + str(e2))
                 if e1[0:3] == e2[0:3]:
                     e1rank = int(e1.split('_')[1])
                     e2rank = int(e2.split('_')[1])

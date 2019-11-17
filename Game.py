@@ -16,7 +16,7 @@ class Game():
         self._numplayers = numplayers
         self.reset()
 
-    def reset(self):
+    def reset(self, total=True):
         self._factorydisplays = []
         for cnt in range(2 * self._numplayers + 1):
             self._factorydisplays.append(pd.Pad())
@@ -26,9 +26,10 @@ class Game():
         for _ in range(Game.countpercolor):
             for color in Game.colors:
                 self._bag.addtile(color)
-        self._playerboards = []
-        for cnt in range(self._numplayers):
-            self._playerboards.append(pb.PlayerBoard())
+        if total:
+            self._playerboards = []
+            for cnt in range(self._numplayers):
+                self._playerboards.append(pb.PlayerBoard())
         self._roundnum = 0
 
     def loadtiles(self):

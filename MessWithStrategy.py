@@ -29,11 +29,11 @@ class MessWithStrategy(strat.Strategy):
                     ocolors.append(ocolor)
             for oc in ocolors:
                 othercolors[oc] = othercolors.get(oc, 0) + 1
-        print("othercolors = " + str(othercolors))
+        # print("othercolors = " + str(othercolors))
         mincolorcount = 20
         for colkey in othercolors.keys():
             mincolorcount = min(mincolorcount, othercolors[colkey])
-        print("Min color count = " + str(mincolorcount))
+        # print("Min color count = " + str(mincolorcount))
         playable = []
         for opt in options:
             for color in opt[2:]:
@@ -53,7 +53,7 @@ class MessWithStrategy(strat.Strategy):
         evcounts = {}
         evals = self.getplayable(options, board, game)
         evals.sort(key=strat.getcount2, reverse=True)
-        print("MessWith evals = " + str(evals))
+        # print("MessWith evals = " + str(evals))
         return(evals)
 
     def recommend(self, options, board, game = None):
