@@ -6,11 +6,6 @@ import WeightedComboStrategyPlayer as wcsp
 import WeightAgent as wa
 
 
-# This is essentially the same as TestWgtComboGame2, but without re-generating
-# the players each time, and testing the weight agent.  This should improve
-# run times for the games, allowing more tests for the reinforcement
-# learning agent.
-
 def rungame(plyrz, plcnt, playme, itr, gameno):
     maxturns = 300
     maxrt = 60.0
@@ -54,7 +49,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     # print(8 * "+" + "\t\tFinal scoring:")
     for idxnum in range(plcnt):
         playme.playerboard[idxnum].finalscore()
-    playme.show()
+    # playme.show()
     currtime = time.time()
     rt = currtime - gamestart
     # print("\nSummary of game " + str(gameno) + " in set " + str(itr) +
@@ -75,7 +70,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     return (retval)
 
 
-def runXiters(strats, iters, agentstrats):
+def runXiters(strats, iters, agentstrats, wgts=None):
     trimdstrats = [strat.split(":")[0] for strat in strats]
     agent = wa.WeightAgent(-1)
     plyrwgtcombos = strats      # Unnecessary, but it calms the code a little
@@ -100,18 +95,36 @@ def runXiters(strats, iters, agentstrats):
                 agent.assign_player(playme, playme.playerboard[plnum],
                                     agentstrats, agentplnum)
                 plyr = agent.player
-            print(plyr)
+            # print(plyr)
             plyrz.append(plyr)
         # print(agent)
         agent.take_action()
         wnrz = rungame(plyrz, plcnt, playme, itr, itr + 1)
         if agentplnum in wnrz:
+            # print("Agent won!  How odd...")
             rwd = 1
         else:
             rwd = 0
         agent.update_vals(rwd)
     print(str(agent))
+    valfl = open("agentvalz.txt", "a")
+    valfl.write(agentstrats + "|" + agent.get_val_str() + "\n")
+    valfl.close()
 
+
+def readvalue(strats):
+    # Read the values file. If the strategy set is present, use that weighting.
+    # If not, let the agent use its default.
+    valz = None
+    valfl = open("agentvalz.txt")
+    for ln in valfl:
+        strat, wgts = ln.strip().split("|")
+        if strat == strats:
+            valz = wgts
+        # read through the rest of the file, even if the strategy set is
+        # found, since we'll just append new results to the end of it.
+    valfl.close()
+    return (valz)
 
 def pickstrats(stratfile, iters, agentstrats=None):
     pickcount = 0
@@ -125,8 +138,9 @@ def pickstrats(stratfile, iters, agentstrats=None):
                   if len(wc) > 0]
     if agentstrats is None:
         # We'll exclude the prevalent color strategy for now.
-        agentstrats = "ExactFitStrategy+CentralPositionStrategy+MinPenaltyStrategy+FillRowStrategy+TopRowsStrategy"
-    runXiters(fullwgtset, iters, agentstrats)
+        agentstrats = "CentralPositionStrategy+ExactFitStrategy+FillRowStrategy+MinPenaltyStrategy+TopRowsStrategy"
+    wgts = readvalue(agentstrats)
+    runXiters(fullwgtset, iters, agentstrats, wgts)
 
 
 if __name__ == "__main__":

@@ -173,6 +173,16 @@ class WeightAgent():
             target = newval
         self.reset_history()
 
+    def load_vals(self, valstr):
+        for stateval in valstr.strip().split(","):
+            state, val = stateval.split(":")
+            self._values[state] = val
+
+    def get_val_str(self):
+        retval = ",".join([str(state) + ":" + str(self.values[state])
+                           for state in self.values.keys()])
+        return (retval)
+
 if __name__ == "__main__":
     import random
 
