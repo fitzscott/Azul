@@ -64,7 +64,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     #           str(plyrz[plyridx].board.score))
 
     if turnz == maxturns:
-        retval = -1
+        retval = [-1]
     else:
         retval = winrarr
     return (retval)
