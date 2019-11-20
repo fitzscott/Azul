@@ -14,7 +14,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     cont = True
     firstplayer = 0
     turnz = 0
-    retval = 0
+    retval = [0]
     # while cont:
     gamestart = time.time()
     while cont and turnz < maxturns:  # real games rarely go past 5
@@ -33,7 +33,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
                     # print("\t  " + 8 * "+" + " turn " + str(turnz + 1) + " next")
                     if not playme.loadtiles():
                         cont = False
-                        retval = 1
+                        retval = [-1]
                         break
                     # playme.show()
                 break
@@ -45,7 +45,9 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
             rt = currtime - gamestart
             if rt > maxrt:
                 print("No final score, ran " + str(rt))
-                return (-1)
+                retval = [-1]
+                turnz = maxturns
+                break
     # print(8 * "+" + "\t\tFinal scoring:")
     for idxnum in range(plcnt):
         playme.playerboard[idxnum].finalscore()
