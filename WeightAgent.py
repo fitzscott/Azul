@@ -29,6 +29,7 @@ class WeightAgent():
         self._values = {}
         self._defval = 0.5      # For populating the values function
         self._state_hist = []
+        self._localwgts = None
 
     def clear_eps(self):
         self._epsilon = 0
@@ -54,8 +55,10 @@ class WeightAgent():
         :return: None
         """
         stratarr = strats.strip().split("+")
-        wgts = [1 for strat in stratarr]
-        self._player = wcsp.WeightedComboStrategyPlayer(game, board, wgts)
+        if self._localwgts is None:
+            self._localwgts = [1 for strat in stratarr]
+        self._player = wcsp.WeightedComboStrategyPlayer(game, board,
+                                                        self._localwgts)
         for strat in stratarr:
             self._player.addstratbystr(strat)
         if plnum != -1:
@@ -82,6 +85,9 @@ class WeightAgent():
     def reset_history(self):
         self._state_history = []
 
+    def reset_wgts(self, wgts):
+        self._player.weights = [w for w in wgts]
+
     def calc_state(self):
         """
         calc_state - return an integer representing the weights on the strategies
@@ -93,19 +99,26 @@ class WeightAgent():
             hashval += (10 ** widx) * wgts[widx]
         return (hashval)
 
-    def update_wgt(self, widx, delta=1):
+    def update_wgt(self, widx, delta=1, update_local=False):
         """
         Adjust the weight for one of the strategies
         :param widx: strategy index
         :param delta: adjustment, typically +1 or -1
+        :param update_local: save the agent's weights, too
         :return: None
         """
+        assert (self.weights[widx] >= self._min_wgt and
+                self.weights[widx] <= self._max_wgt)
         self._player.weights[widx] += delta
+        if update_local:
+            self._localwgts[widx] += delta
+        # print("updated player weights = " + str(self._player.weights))
+        # print("updated weights = " + str(self.weights))
 
     def adjustable(self, adjustment):
         """
         List of weights available for adjustment.
-        Adjusted weight must be between 0 and 9, inclusive.
+        Adjusted weight must be between min and max, inclusive.
         :return: Array of indices
         """
         return([idx for idx in range(len(self.weights))
@@ -114,27 +127,35 @@ class WeightAgent():
 
     def available_actions(self):
         acts = {}
-        acts[1] = self.adjustable(1)
+        # We will weight the upward direction, since it seems like we are
+        # not reaching all the options "on top".
+        poswgt = 5
+        # print("    wgts: " + str(self.weights))
+        # print("    plyr wgts: " + str(self._player.weights))
+        acts[1] = self.adjustable(1) * poswgt
+        # print("positive actions = " + str(acts[1]))
         acts[-1] = self.adjustable(-1)
+        # print("negative actions = " + str(acts[-1]))
         return (acts)
 
     def take_action(self):
         change = [1, -1]
         options = self.available_actions()
-        next_move = None
-        moves = []
+        next_move = (0,0)
         if np.random.rand() < self._epsilon:    # random choice
             # There will be times that we cannot go up or down, so make
             # sure we don't try those.
+            # print("    random choice")
+            moves = []
             for direction in change:
                 for idx in options[direction]:
-                    moves.append((direction, idx))
-            # direction = change[np.random.choice(len(change))]
-            # num_opts = len(options[direction])
-            idx = np.random.choice(len(moves))
-            next_move = (moves[idx][0], moves[idx][1])
+                    moves.append((idx, direction))
+            chidx = np.random.choice(len(moves))
+            next_move = (moves[chidx][0], moves[chidx][1])
         else:           # Select best so far
-            curr_wgts = self._player.weights
+            # print("    best so far choice")
+            curr_wgts = [w for w in self._player.weights]
+            # print("current weights = " + str(curr_wgts))
             best_val = -2
             # best_wgts = None
             # best_state = 0
@@ -150,11 +171,11 @@ class WeightAgent():
                         best_val = val
                         # best_wgts = self._player.weights
                         # best_state = state
-                        next_move = (direction, idx)
-            # We've tried all the options, so reset to original state.
-            self._player.weights = curr_wgts
+                        next_move = (idx, direction)
+                    self.reset_wgts(curr_wgts)
+        # print("weights are " + str(self.weights) + ", next move: " + str(next_move))
         # Apply the next move
-        self.update_wgt(next_move[1], next_move[0])
+        self.update_wgt(next_move[0], next_move[1], True)     # index then direction
         state = self.calc_state()
         # This is clunky.  Figure out how to do it more cleanly.
         if state not in self.values.keys():

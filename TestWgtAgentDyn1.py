@@ -126,6 +126,7 @@ def readvalue(strats):
         # read through the rest of the file, even if the strategy set is
         # found, since we'll just append new results to the end of it.
     valfl.close()
+    # print("Read weight values: " + str(valz))
     return (valz)
 
 def pickstrats(stratfile, iters, agentstrats=None):
