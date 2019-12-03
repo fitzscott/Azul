@@ -108,8 +108,8 @@ class WeightAgent():
         :return: None
         """
 
-        print("pre-assert weights = " + str(self._player.weights) +
-              ", index: " + str(widx) + ", delta: " + str(delta))
+        # print("pre-assert weights = " + str(self._player.weights) +
+        #       ", index: " + str(widx) + ", delta: " + str(delta))
         assert (self.weights[widx] >= self._min_wgt and
                 self.weights[widx] <= self._max_wgt)
         self._player.weights[widx] += delta
@@ -147,7 +147,7 @@ class WeightAgent():
             # There will be times that we cannot go up or down, so make
             # sure we don't try those.
             options = self.available_actions(5)
-            print("    random choice")
+            # print("    random choice")
             moves = []
             for direction in change:
                 for idx in options[direction]:
@@ -156,7 +156,7 @@ class WeightAgent():
             next_move = (moves[chidx][0], moves[chidx][1])
         else:           # Select best so far
             options = self.available_actions(1)
-            print("    best so far choice")
+            # print("    best so far choice")
             curr_wgts = [w for w in self._player.weights]
             # print("current weights = " + str(curr_wgts))
             best_val = -2
