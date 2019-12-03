@@ -107,6 +107,9 @@ class WeightAgent():
         :param update_local: save the agent's weights, too
         :return: None
         """
+
+        print("pre-assert weights = " + str(self._player.weights) +
+              ", index: " + str(widx) + ", delta: " + str(delta))
         assert (self.weights[widx] >= self._min_wgt and
                 self.weights[widx] <= self._max_wgt)
         self._player.weights[widx] += delta
@@ -125,11 +128,10 @@ class WeightAgent():
                 if self.weights[idx] + adjustment >= self._min_wgt and
                 self.weights[idx] + adjustment <= self._max_wgt])
 
-    def available_actions(self):
+    def available_actions(self, poswgt=1):
         acts = {}
-        # We will weight the upward direction, since it seems like we are
+        # poswgt will weight the upward direction, since it seems like we are
         # not reaching all the options "on top".
-        poswgt = 5
         # print("    wgts: " + str(self.weights))
         # print("    plyr wgts: " + str(self._player.weights))
         acts[1] = self.adjustable(1) * poswgt
@@ -140,12 +142,12 @@ class WeightAgent():
 
     def take_action(self):
         change = [1, -1]
-        options = self.available_actions()
         next_move = (0,0)
         if np.random.rand() < self._epsilon:    # random choice
             # There will be times that we cannot go up or down, so make
             # sure we don't try those.
-            # print("    random choice")
+            options = self.available_actions(5)
+            print("    random choice")
             moves = []
             for direction in change:
                 for idx in options[direction]:
@@ -153,7 +155,8 @@ class WeightAgent():
             chidx = np.random.choice(len(moves))
             next_move = (moves[chidx][0], moves[chidx][1])
         else:           # Select best so far
-            # print("    best so far choice")
+            options = self.available_actions(1)
+            print("    best so far choice")
             curr_wgts = [w for w in self._player.weights]
             # print("current weights = " + str(curr_wgts))
             best_val = -2

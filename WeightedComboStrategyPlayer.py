@@ -12,7 +12,10 @@ class WeightedComboStrategyPlayer(csp.ComboStrategyPlayer):
 
     def __init__(self, game, board, weights=None):
         super().__init__(game, board)
-        self._weights = weights
+        if weights is not None:
+            self._weights = [w for w in weights]
+        else:
+            self._weights = None
 
     @property
     def weights(self):
