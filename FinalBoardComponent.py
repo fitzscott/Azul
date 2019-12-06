@@ -205,7 +205,12 @@ class FinalBoardComponent(brd.BoardComponent):
         for cnt in colcnt:
             if cnt == FinalBoardComponent.dimension:
                 sc += 7
+        # print("row count = " + str(rowcnt))
+        # print("column count = " + str(colcnt))
+        # print("color count = " + str(colorcnt))
         for color in colorcnt.keys():
+            # print("comparing count " + str(colorcnt[color]) + " + vs. "
+            #       + str(FinalBoardComponent.dimension))
             if colorcnt[color] == FinalBoardComponent.dimension:
                 sc += 10
         return(sc)

@@ -85,7 +85,9 @@ class PlayerBoard():
             self._score = 0
 
     def finalscore(self):
+        # print("running PB final score, before = " + str(self._score))
         self._score += self.finalboard.finalscore()
+        # print("running PB final score, after = " + str(self._score))
 
 if __name__ == "__main__":
     pb = PlayerBoard()

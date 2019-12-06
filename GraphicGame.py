@@ -403,6 +403,12 @@ class GraphicGame(g.Game):
                     pygame.time.wait(100)
                 self.show()
 
+            # calculate final scoring
+            for idxnum in range(self.numplayers):
+                self.playerboard[idxnum].finalscore()
+                self.drawall(idxnum)
+            self.show()
+
             # write "Winner" under winner's board (potentially more than 1)
             print("Finding winner")
             for winrnum in self.winner():
