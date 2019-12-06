@@ -175,7 +175,7 @@ class Game():
 
     def winner(self):
         finalscores = [pb.score for pb in self.playerboard]
-        print("final scores = " + str(finalscores))
+        # print("final scores = " + str(finalscores))
         topscore = -1
         for score in finalscores:
             topscore = max(topscore, score)
