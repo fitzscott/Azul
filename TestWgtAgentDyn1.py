@@ -149,4 +149,8 @@ def pickstrats(stratfile, iters, agentstrats=None):
 if __name__ == "__main__":
     stratfile = sys.argv[1]
     iters = int(sys.argv[2])
-    pickstrats(stratfile, iters)
+    if len(sys.argv) > 3:
+        strats = sys.argv[3]
+    else:
+        strats = None
+    pickstrats(stratfile, iters, strats)
