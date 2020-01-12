@@ -4,6 +4,10 @@ import Bag as bg
 import CentralArea as ca
 import PlayerBoard as pb
 
+def plrank(scor):
+    # Sort order for player scores
+    return (scor[1])
+
 class Game():
     """
 
@@ -31,6 +35,7 @@ class Game():
             for cnt in range(self._numplayers):
                 self._playerboards.append(pb.PlayerBoard())
         self._roundnum = 0
+        self._playerranks = []
 
     def loadtiles(self):
         """
@@ -121,6 +126,10 @@ class Game():
     def roundnum(self):
         return (self._roundnum)
 
+    @property
+    def playerranks(self):
+        return (self._playerranks)
+
     def turnover(self):
         """
         turnover - when all the display areas and the central area are empty,
@@ -175,6 +184,10 @@ class Game():
 
     def winner(self):
         finalscores = [pb.score for pb in self.playerboard]
+        self._playerranks = [(idx, self.playerboard[idx].score)
+                             for idx in range(len(self.playerboard))]
+        self._playerranks.sort(key=plrank)    # Ascending
+        # print(str(self.playerranks))
         # print("final scores = " + str(finalscores))
         topscore = -1
         for score in finalscores:

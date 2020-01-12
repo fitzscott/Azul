@@ -27,7 +27,7 @@ class WeightAgent():
         self._min_wgt = 1       # originally 0, but problems in WCSP
         self._max_wgt = 3       # originally 9; then 6
         self._values = {}
-        self._defval = 0.5      # For populating the values function
+        self._defval = 2.0      # For populating values function - optimistic
         self._state_hist = []
         self._localwgts = None
 

@@ -104,9 +104,12 @@ def runXiters(strats, iters, agentstrats, wgts=None):
         wnrz = rungame(plyrz, plcnt, playme, itr, itr + 1)
         if agentplnum in wnrz:
             # print("Agent won!  How odd...")
-            rwd = 1
+            rwd = 1.0
         else:
-            rwd = 0
+            rwd = 0.0
+            for ridx in range(len(playme.playerranks)):
+                if agentplnum == playme.playerranks[ridx][0]:
+                    rwd = ridx * 1.0 / 3.0
         agent.update_vals(rwd)
     print(str(agent))
     valfl = open("agentvalz.txt", "a")
