@@ -73,7 +73,7 @@ class WeightAgent():
         return (self._values)
 
     def add_value(self, state, val):
-        self._values[state] = val
+        self._values[int(state)] = float(val)
 
     @property
     def state_history(self):
@@ -124,6 +124,7 @@ class WeightAgent():
         Adjusted weight must be between min and max, inclusive.
         :return: Array of indices
         """
+        # print("weights in adjustable = " + str(self.weights))
         return([idx for idx in range(len(self.weights))
                 if self.weights[idx] + adjustment >= self._min_wgt and
                 self.weights[idx] + adjustment <= self._max_wgt])
@@ -200,7 +201,7 @@ class WeightAgent():
     def load_vals(self, valstr):
         for stateval in valstr.strip().split(","):
             state, val = stateval.split(":")
-            self._values[state] = val
+            self.add_state(state, val)
 
     def get_val_str(self):
         retval = ",".join([str(state) + ":" + str(self.values[state])

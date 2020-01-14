@@ -77,6 +77,13 @@ def runXiters(strats, iters, agentstrats, wgts=None):
     agent = wa.WeightAgent(-1)
     plyrwgtcombos = strats      # Unnecessary, but it calms the code a little
     plcnt = 4
+    # Assign previously-recorded values to agent
+    if wgts is not None:
+        wvalz = wgts.split(",")
+        for wval in wvalz:
+            state, val = wval.split(":")
+            agent.add_value(state, val)
+            # print("added " + str(val) + " to state " + str(state))
 
     for itr in range(iters):
         # Set up the game.  Ideally, we wouldn't do this every time,
