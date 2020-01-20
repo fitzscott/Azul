@@ -54,16 +54,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     # playme.show()
     currtime = time.time()
     rt = currtime - gamestart
-    # print("\nSummary of game " + str(gameno) + " in set " + str(itr) +
-    #       " - run time " + str(rt) + ", final scores:")
     winrarr = playme.winner()
-    # for plyridx in range(len(plyrz)):
-    #     if plyridx in winrarr:
-    #         winstr = "Winner: "
-    #     else:
-    #         winstr = "Loser:  "
-    #     print(winstr + str(plyrz[plyridx]) + " final score = " + \
-    #           str(plyrz[plyridx].board.score))
 
     if turnz == maxturns:
         retval = [-1]
@@ -72,7 +63,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     return (retval)
 
 
-def runXiters(strats, iters, agentstrats, wgts=None):
+def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None):
     trimdstrats = [strat.split(":")[0] for strat in strats]
     agent = wa.WeightAgent(-1)
     plyrwgtcombos = strats      # Unnecessary, but it calms the code a little
@@ -84,6 +75,9 @@ def runXiters(strats, iters, agentstrats, wgts=None):
             state, val = wval.split(":")
             agent.add_value(state, val)
             # print("added " + str(val) + " to state " + str(state))
+    if incr is not None:
+        agent.max_weight = maxwgt
+        agent.increment = incr
 
     for itr in range(iters):
         # Set up the game.  Ideally, we wouldn't do this every time,
@@ -139,7 +133,7 @@ def readvalue(strats):
     # print("Read weight values: " + str(valz))
     return (valz)
 
-def pickstrats(stratfile, iters, agentstrats=None):
+def pickstrats(stratfile, iters, agentstrats=None, maxwgt=None, incr=None):
     pickcount = 0
     stratsets = []
     # First, get the list of weighted strategy combinations to use.
@@ -153,7 +147,7 @@ def pickstrats(stratfile, iters, agentstrats=None):
         # We'll exclude the prevalent color strategy for now.
         agentstrats = "CentralPositionStrategy+ExactFitStrategy+FillRowStrategy+MinPenaltyStrategy+TopRowsStrategy"
     wgts = readvalue(agentstrats)
-    runXiters(fullwgtset, iters, agentstrats, wgts)
+    runXiters(fullwgtset, iters, agentstrats, wgts, maxwgt, incr)
 
 
 if __name__ == "__main__":
@@ -163,4 +157,10 @@ if __name__ == "__main__":
         strats = sys.argv[3]
     else:
         strats = None
-    pickstrats(stratfile, iters, strats)
+    if len(sys.argv) > 5:
+        maxwgt = int(sys.argv[4])
+        incr = int(sys.argv[5])
+    else:
+        maxwgt = None
+        incr = None
+    pickstrats(stratfile, iters, strats, maxwgt, incr)

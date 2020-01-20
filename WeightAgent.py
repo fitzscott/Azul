@@ -26,6 +26,7 @@ class WeightAgent():
         self._state_history = []
         self._min_wgt = 1       # originally 0, but problems in WCSP
         self._max_wgt = 3       # originally 9; then 6
+        self._increment = 1
         self._values = {}
         self._defval = 2.0      # For populating values function - optimistic
         self._state_hist = []
@@ -72,6 +73,22 @@ class WeightAgent():
     def values(self):
         return (self._values)
 
+    @property
+    def max_weight(self):
+        return(self._max_wgt)
+
+    @max_weight.setter
+    def max_weight(self, val):
+        self._max_wgt = val
+
+    @property
+    def increment(self):
+        return (self._increment)
+
+    @increment.setter
+    def increment(self, val):
+        self._increment = val
+
     def add_value(self, state, val):
         self._values[int(state)] = float(val)
 
@@ -112,9 +129,9 @@ class WeightAgent():
         #       ", index: " + str(widx) + ", delta: " + str(delta))
         assert (self.weights[widx] >= self._min_wgt and
                 self.weights[widx] <= self._max_wgt)
-        self._player.weights[widx] += delta
+        self._player.weights[widx] += delta * self.increment
         if update_local:
-            self._localwgts[widx] += delta
+            self._localwgts[widx] += delta * self.increment
         # print("updated player weights = " + str(self._player.weights))
         # print("updated weights = " + str(self.weights))
 
@@ -126,8 +143,10 @@ class WeightAgent():
         """
         # print("weights in adjustable = " + str(self.weights))
         return([idx for idx in range(len(self.weights))
-                if self.weights[idx] + adjustment >= self._min_wgt and
-                self.weights[idx] + adjustment <= self._max_wgt])
+                if self.weights[idx] + adjustment * self.increment
+                >= self._min_wgt and
+                self.weights[idx] + adjustment * self.increment
+                <= self._max_wgt])
 
     def available_actions(self, poswgt=1):
         acts = {}
