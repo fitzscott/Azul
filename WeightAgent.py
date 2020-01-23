@@ -89,6 +89,14 @@ class WeightAgent():
     def increment(self, val):
         self._increment = val
 
+    @property
+    def alpha(self):
+        return (self._learnrate)
+
+    @alpha.setter
+    def alpha(self, val):
+        self._learnrate = val
+
     def add_value(self, state, val):
         self._values[int(state)] = float(val)
 

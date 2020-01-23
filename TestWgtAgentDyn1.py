@@ -63,7 +63,8 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     return (retval)
 
 
-def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None):
+def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
+              alpha=None):
     trimdstrats = [strat.split(":")[0] for strat in strats]
     agent = wa.WeightAgent(-1)
     plyrwgtcombos = strats      # Unnecessary, but it calms the code a little
@@ -78,6 +79,8 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None):
     if incr is not None:
         agent.max_weight = maxwgt
         agent.increment = incr
+    if alpha is not None:
+        agent.alpha = alpha
 
     for itr in range(iters):
         # Set up the game.  Ideally, we wouldn't do this every time,
@@ -133,7 +136,7 @@ def readvalue(strats):
     # print("Read weight values: " + str(valz))
     return (valz)
 
-def pickstrats(stratfile, iters, agentstrats=None, maxwgt=None, incr=None):
+def pickstrats(stratfile, iters, agentstrats=None, maxwgt=None, incr=None, alpha=None):
     pickcount = 0
     stratsets = []
     # First, get the list of weighted strategy combinations to use.
@@ -147,7 +150,7 @@ def pickstrats(stratfile, iters, agentstrats=None, maxwgt=None, incr=None):
         # We'll exclude the prevalent color strategy for now.
         agentstrats = "CentralPositionStrategy+ExactFitStrategy+FillRowStrategy+MinPenaltyStrategy+TopRowsStrategy"
     wgts = readvalue(agentstrats)
-    runXiters(fullwgtset, iters, agentstrats, wgts, maxwgt, incr)
+    runXiters(fullwgtset, iters, agentstrats, wgts, maxwgt, incr, alpha)
 
 
 if __name__ == "__main__":
@@ -163,4 +166,8 @@ if __name__ == "__main__":
     else:
         maxwgt = None
         incr = None
-    pickstrats(stratfile, iters, strats, maxwgt, incr)
+    if len(sys.argv) > 6:
+        alpha = float(sys.argv[6])
+    else:
+        alpha = 0.5
+    pickstrats(stratfile, iters, strats, maxwgt, incr, alpha)
