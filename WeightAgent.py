@@ -174,7 +174,7 @@ class WeightAgent():
         if np.random.rand() < self._epsilon:    # random choice
             # There will be times that we cannot go up or down, so make
             # sure we don't try those.
-            options = self.available_actions(5)
+            options = self.available_actions(1)     # was 5; checking completeness
             # print("    random choice")
             moves = []
             for direction in change:

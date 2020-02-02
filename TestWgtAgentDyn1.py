@@ -104,7 +104,7 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
             # print(plyr)
             plyrz.append(plyr)
         # print(agent)
-        agent.take_action()
+        state = agent.take_action()
         wnrz = rungame(plyrz, plcnt, playme, itr, itr + 1)
         if agentplnum in wnrz:
             # print("Agent won!  How odd...")
@@ -114,6 +114,8 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
             for ridx in range(len(playme.playerranks)):
                 if agentplnum == playme.playerranks[ridx][0]:
                     rwd = ridx * 1.0 / 3.0
+        print(":".join(["State", str(state), "Reward", str(rwd),
+                        "Strategies", "+".join(agent.player.strstrategies)]))
         agent.update_vals(rwd)
     print(str(agent))
     valfl = open("agentvalz.txt", "a")
