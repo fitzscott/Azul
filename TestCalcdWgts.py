@@ -92,9 +92,11 @@ def runXiters(strats, iters, teststrats, wgts=None):
             plyrz.append(plyr)
         # print(agent)
         wnrz = rungame(plyrz, plcnt, playme, itr, itr + 1)
+        # print(str(playme.playerranks))
         for ridx in range(len(playme.playerranks)):
-            if testplnum == playme.playerranks[ridx][0]:
-                print("Test player placed # " + str(4 - ridx))
+            if testplnum == playme.playerranks[ridx][0]:    # 0 is its rank
+                scor = playme.playerranks[ridx][1]          # 1 is its score
+                print("Test player scored " + str(scor) + " and placed # " + str(4 - ridx))
                 break
 
 def pickstrats(stratfile, iters, teststrats=None, wgts=None):
