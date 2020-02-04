@@ -67,6 +67,10 @@ def runXiters(strats, iters, teststrats, wgts=None):
     trimdstrats = [strat.split(":")[0] for strat in strats]
     plyrwgtcombos = strats      # Unnecessary, but it calms the code a little
     plcnt = 4
+    totscor = 0
+    placesum = 0
+    gamecnt = 0
+    placecnt = [0, 0, 0, 0]
 
     for itr in range(iters):
         # Set up the game.  Ideally, we wouldn't do this every time,
@@ -93,11 +97,21 @@ def runXiters(strats, iters, teststrats, wgts=None):
         # print(agent)
         wnrz = rungame(plyrz, plcnt, playme, itr, itr + 1)
         # print(str(playme.playerranks))
-        for ridx in range(len(playme.playerranks)):
-            if testplnum == playme.playerranks[ridx][0]:    # 0 is its rank
-                scor = playme.playerranks[ridx][1]          # 1 is its score
-                print("Test player scored " + str(scor) + " and placed # " + str(4 - ridx))
+        ranks = playme.playerranks
+        for ridx in range(len(ranks)):
+            if testplnum == ranks[ridx][0]:    # 0 is its rank
+                scor = ranks[ridx][1]          # 1 is its score
+                # print("Test player scored " + str(scor) + " and placed # " + str(4 - ridx))
+                totscor += scor
+                placesum += 4 - ridx
+                placecnt[3 - ridx] += 1
+                gamecnt += 1
                 break
+
+    print("    Avg score = " + str(float(totscor) / float(gamecnt)))
+    print("    Avg rank  = " + str(float(placesum) / float(gamecnt)))
+    print("    Place counts = " + "\t".join([str(p) for p in placecnt]))
+    print("    Percentages  = " + "\t".join([str(float(pc) / float(gamecnt) * 100)[:5] for pc in placecnt]))
 
 def pickstrats(stratfile, iters, teststrats=None, wgts=None):
     pickcount = 0
