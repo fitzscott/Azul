@@ -17,9 +17,17 @@ class SmartWgtGraphicGame(gg.GraphicGame):
         wgtfile = open(flnm)
         wgtcombos = wgtfile.readlines()
         wgtfile.close()
-        fullwgtset = [wc.strip().split(":")[0]
-                      for wc in wgtcombos
-                      if len(wc) > 0]
+        fullwgtset = []
+        wgts = []
+        # fullwgtset = [wc.strip().split(":")[0]
+        #               for wc in wgtcombos
+        #               if len(wc) > 0]
+        for wc in wgtcombos:
+            factrz = wc.strip().split(":")
+            if len(wc) > 0:
+                fullwgtset.append(factrz[0])
+            if len(factrz) > 6:
+                wgts.append([int(w) for w in factrz[6]])
 
         self._players = []
         for pidx in range(self.numplayers):
@@ -28,7 +36,10 @@ class SmartWgtGraphicGame(gg.GraphicGame):
             choice = random.randint(0, len(fullwgtset)-1)
             for stratstr in fullwgtset[choice].split("+"):
                 plyr.addstratbystr(stratstr)
-            plyr.stdweight()
+            if len(wgts) > 0:
+                plyr.weights = wgts[choice]
+            else:
+                plyr.stdweight()
             print("Player " + str(pidx + 1) + " = " + ", ".join(plyr.strstrategies))
             self._players.append(plyr)
 
