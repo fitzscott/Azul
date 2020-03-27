@@ -1,4 +1,5 @@
 import sys
+import os
 import random
 import time
 import Game as g
@@ -44,7 +45,7 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
             currtime = time.time()
             rt = currtime - gamestart
             if rt > maxrt:
-                print("No final score, ran " + str(rt))
+                # print("No final score, ran " + str(rt))
                 retval = [-1]
                 turnz = maxturns
                 break
@@ -61,6 +62,10 @@ def rungame(plyrz, plcnt, playme, itr, gameno):
     else:
         retval = winrarr
     return (retval)
+
+
+def agentvalzflnm(strats):
+    return("agentvalz_" + "_".join(strats.split("+")))
 
 
 def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
@@ -115,11 +120,16 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
             for ridx in range(len(playme.playerranks)):
                 if agentplnum == playme.playerranks[ridx][0]:
                     rwd = ridx * 1.0 / 3.0
-        print(":".join(["State", str(state), "Reward", str(rwd),
-                        "Strategies", "+".join(agent.player.strstrategies)]))
+        # print(":".join(["State", str(state), "Reward", str(rwd),
+        #                 "Strategies", "+".join(agent.player.strstrategies)]))
         agent.update_vals(rwd)
-    print(str(agent))
-    valfl = open("agentvalz.txt", "a")
+    # print(str(agent))
+    agvflnm = agentvalzflnm(agentstrats)
+    if os.path.exists(agvflnm + ".bak"):
+        os.remove(agvflnm + ".bak")
+    if os.path.exists(agvflnm + ".txt"):
+        os.rename(agvflnm + ".txt", agvflnm + ".bak")
+    valfl = open(agvflnm + ".txt", "w")
     valfl.write(agentstrats + "|" + agent.get_val_str() + "\n")
     valfl.close()
 
@@ -128,15 +138,17 @@ def readvalue(strats):
     # Read the values file. If the strategy set is present, use that weighting.
     # If not, let the agent use its default.
     valz = None
-    valfl = open("agentvalz.txt")
-    for ln in valfl:
-        strat, wgts = ln.strip().split("|")
-        if strat == strats:
-            valz = wgts
-        # read through the rest of the file, even if the strategy set is
-        # found, since we'll just append new results to the end of it.
-    valfl.close()
-    # print("Read weight values: " + str(valz))
+    vfnm = agentvalzflnm(strats) + ".txt"
+    if os.path.exists(vfnm):
+        valfl = open(vfnm)
+        for ln in valfl:
+            strat, wgts = ln.strip().split("|")
+            if strat == strats:
+                valz = wgts
+            # read through the rest of the file, even if the strategy set is
+            # found, since we'll just append new results to the end of it.
+        valfl.close()
+        # print("Read weight values: " + str(valz))
     return (valz)
 
 def pickstrats(stratfile, iters, agentstrats=None, maxwgt=None, incr=None, alpha=None):
