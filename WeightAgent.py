@@ -97,6 +97,14 @@ class WeightAgent():
     def alpha(self, val):
         self._learnrate = val
 
+    @property
+    def epsilon(self):
+        return (self._epsilon)
+
+    @epsilon.setter
+    def epsilon(self, val):
+        self._epsilon = val
+
     def add_value(self, state, val):
         self._values[int(state)] = float(val)
 
