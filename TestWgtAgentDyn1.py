@@ -113,6 +113,7 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
             plyrz.append(plyr)
         # print(agent)
         state = agent.take_action()
+        assert(state != 0)
         wnrz = rungame(plyrz, plcnt, playme, itr, itr + 1)
         if agentplnum in wnrz:
             # print("Agent won!  How odd...")

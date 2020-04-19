@@ -121,6 +121,22 @@ class WeightAgent():
     def reset_wgts(self, wgts):
         self._player.weights = [w for w in wgts]
 
+    def chkdupes(self, narr):
+        retval = False
+        for chk in range(self.max_weight - 1):
+            cnum = chk + 2
+            multcnt = 0
+            for n in narr:
+                if int(n) % cnum == 0:
+                    multcnt += 1
+            if multcnt == len(narr):
+                # print("Got multiple count " + str(multcnt) + " for " +
+                #       "".join([str(x) for x in narr]))
+                retval = True
+                break
+        # print("Checked " + nstr + ", returned " + str(retval))
+        return (retval)
+
     def calc_state(self):
         """
         calc_state - return an integer representing the weights on the strategies
@@ -128,8 +144,9 @@ class WeightAgent():
         """
         hashval = 0
         wgts = self._player.weights
-        for widx in range(len(wgts)):
-            hashval += (10 ** widx) * wgts[widx]
+        if not self.chkdupes(wgts):         # redundant but leaving it for now
+            for widx in range(len(wgts)):
+                hashval += (10 ** widx) * wgts[widx]
         return (hashval)
 
     def update_wgt(self, widx, delta=1, update_local=False):
@@ -151,6 +168,19 @@ class WeightAgent():
         # print("updated player weights = " + str(self._player.weights))
         # print("updated weights = " + str(self.weights))
 
+    def goodadjust(self, idx, adjustment):
+        retval = True
+
+        if self.weights[idx] + adjustment * self.increment < self._min_wgt \
+                or self.weights[idx] + adjustment * self.increment \
+                > self._max_wgt:
+            retval = False
+        else:
+            dupchk = [w for w in self.weights]
+            dupchk[idx] += adjustment * self.increment
+            retval = not self.chkdupes(dupchk)
+        return (retval)
+
     def adjustable(self, adjustment):
         """
         List of weights available for adjustment.
@@ -159,10 +189,7 @@ class WeightAgent():
         """
         # print("weights in adjustable = " + str(self.weights))
         return([idx for idx in range(len(self.weights))
-                if self.weights[idx] + adjustment * self.increment
-                >= self._min_wgt and
-                self.weights[idx] + adjustment * self.increment
-                <= self._max_wgt])
+                if self.goodadjust(idx, adjustment)])
 
     def available_actions(self, poswgt=1):
         acts = {}
@@ -188,8 +215,9 @@ class WeightAgent():
             for direction in change:
                 for idx in options[direction]:
                     moves.append((idx, direction))
-            chidx = np.random.choice(len(moves))
-            next_move = (moves[chidx][0], moves[chidx][1])
+            if len(moves) > 0:
+                chidx = np.random.choice(len(moves))
+                next_move = (moves[chidx][0], moves[chidx][1])
         else:           # Select best so far
             options = self.available_actions(1)
             # print("    best so far choice")
@@ -202,15 +230,18 @@ class WeightAgent():
                 for idx in options[direction]:
                     self.update_wgt(idx, direction)
                     state = self.calc_state()
-                    # think there's a faster way to do this
-                    if state not in self.values.keys():
-                        self._values[state] = self._defval
-                    val = self.values[state]
-                    if val > best_val:
-                        best_val = val
-                        # best_wgts = self._player.weights
-                        # best_state = state
-                        next_move = (idx, direction)
+                    if state != 0:      # reject factors / duplicates
+                        # think there's a faster way to do this
+                        if state not in self.values.keys():
+                            self._values[state] = self._defval
+                        val = self.values[state]
+                        if val > best_val:
+                            best_val = val
+                            # best_wgts = self._player.weights
+                            # best_state = state
+                            next_move = (idx, direction)
+                    else:
+                        print("Rejected " + str(self.weights))
                     self.reset_wgts(curr_wgts)
         # print("weights are " + str(self.weights) + ", next move: " + str(next_move))
         # Apply the next move
