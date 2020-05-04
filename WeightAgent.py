@@ -22,12 +22,12 @@ class WeightAgent():
         self._player = None
         self._epsilon = eps
         self._learnrate = alpha
-        self._values = None
+        self._values = {}
+        self._testcount = {}
         self._state_history = []
         self._min_wgt = 1       # originally 0, but problems in WCSP
         self._max_wgt = 3       # originally 9; then 6
         self._increment = 1
-        self._values = {}
         self._defval = 2.0      # For populating values function - optimistic
         self._state_hist = []
         self._localwgts = None
@@ -74,6 +74,10 @@ class WeightAgent():
         return (self._values)
 
     @property
+    def testcount(self):
+        return (self._testcount)
+
+    @property
     def max_weight(self):
         return(self._max_wgt)
 
@@ -105,8 +109,11 @@ class WeightAgent():
     def epsilon(self, val):
         self._epsilon = val
 
-    def add_value(self, state, val):
+    def add_value(self, state, val, runcount=1):
+        # print("Adding value " + str(val) + " and test count " +
+        #       str(runcount) + " to state " + str(state))
         self._values[int(state)] = float(val)
+        self._testcount[int(state)] = int(runcount)
 
     @property
     def state_history(self):
@@ -257,20 +264,22 @@ class WeightAgent():
         target = reward
         # print("State history is " + str(self.state_history))
         # print("Values is " + str(self.values))
+        # print("Counts are " + str(self.testcount))
         for prev in reversed(self.state_history):
             prevval = self.values[prev]
-            newval = prevval + self._learnrate * (target - prevval)
+            # Adjust the learning rate by the number of tests run
+            # newval = prevval + self._learnrate * (target - prevval)
+            adjalpha = self._learnrate / (1 + self.testcount[prev] / 100.0)
+            newval = prevval + self._learnrate * (target - prevval) / adjalpha
             self.values[prev] = newval
+            # also update the test count for this state
+            self.testcount[prev] = self.testcount.get(prev, 0) + 1
             target = newval
         self.reset_history()
 
-    def load_vals(self, valstr):
-        for stateval in valstr.strip().split(","):
-            state, val = stateval.split(":")
-            self.add_state(state, val)
-
     def get_val_str(self):
-        retval = ",".join([str(state) + ":" + str(self.values[state])
+        retval = ",".join([":".join([str(state), str(self.values[state]),
+                                    str(self.testcount.get(state, 0))])
                            for state in self.values.keys()])
         return (retval)
 

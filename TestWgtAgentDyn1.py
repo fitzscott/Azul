@@ -78,9 +78,15 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
     if wgts is not None:
         wvalz = wgts.split(",")
         for wval in wvalz:
-            state, val = wval.split(":")
-            agent.add_value(state, val)
+            sinfo = wval.split(":")
+            state, val = sinfo[0:2]
+            if len(sinfo) > 2:
+                runcount = int(sinfo[2])
+            else:
+                runcount = 1
+            agent.add_value(state, val, runcount)
             # print("added " + str(val) + " to state " + str(state))
+        # print("test run counts = " + str(agent.testcount))
     if incr is not None:
         agent.max_weight = maxwgt
         agent.increment = incr
