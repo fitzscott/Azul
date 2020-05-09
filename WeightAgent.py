@@ -271,7 +271,7 @@ class WeightAgent():
             # newval = prevval + self._learnrate * (target - prevval)
             # Update the test count for this state
             self.testcount[prev] = self.testcount.get(prev, 0) + 1
-            adjalpha = self._learnrate / (1 + self.testcount[prev] / 100.0)
+            adjalpha = 1 + self.testcount[prev] / 100.0
             newval = prevval + self._learnrate * (target - prevval) / adjalpha
             self.values[prev] = newval
             target = newval
