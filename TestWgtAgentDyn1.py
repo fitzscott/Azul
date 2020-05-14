@@ -95,7 +95,7 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
     if epsilon is not None:
         agent.epsilon = epsilon
     if not cr8_spc:
-        print("not creating search space")
+        # print("not creating search space")
         agent.createspace = False
 
     for itr in range(iters):
