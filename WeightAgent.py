@@ -1,5 +1,6 @@
 import numpy as np
 import WeightedComboStrategyPlayer as wcsp
+import random
 
 class WeightAgent():
     """
@@ -31,6 +32,7 @@ class WeightAgent():
         self._defval = 2.0      # For populating values function - optimistic
         self._state_hist = []
         self._localwgts = None
+        self._createspace = True
 
     def clear_eps(self):
         self._epsilon = 0
@@ -109,6 +111,14 @@ class WeightAgent():
     def epsilon(self, val):
         self._epsilon = val
 
+    @property
+    def createspace(self):
+        return (self._createspace)
+
+    @createspace.setter
+    def createspace(self, val):
+        self._createspace = val
+
     def add_value(self, state, val, runcount=1):
         # print("Adding value " + str(val) + " and test count " +
         #       str(runcount) + " to state " + str(state))
@@ -125,7 +135,7 @@ class WeightAgent():
     def reset_history(self):
         self._state_history = []
 
-    def reset_wgts(self, wgts):
+    def set_wgts(self, wgts):
         self._player.weights = [w for w in wgts]
 
     def chkdupes(self, narr):
@@ -198,6 +208,27 @@ class WeightAgent():
         return([idx for idx in range(len(self.weights))
                 if self.goodadjust(idx, adjustment)])
 
+    def best_value_state(self):
+        # Instead of building the search space, assume it is complete and
+        # just choose the state with the highest value.
+        best_val = -2
+        best_state = -1
+        for wgt in self.values.keys():
+            if self.values[wgt] > best_val:
+                best_val = self.values[wgt]
+                best_state = wgt
+        # print("Best state is " + str(best_state) + ", value " + str(best_val))
+        return (best_state)
+
+    def random_value_state(self):
+        # Not sure if this is necessary...
+        states = [st for st in self.values.keys()]
+        spsiz = len(states)
+        rndwgtidx = random.randint(0, spsiz)
+        # print("States are: " + str(states))
+        # print("Random index is " + str(rndwgtidx))
+        return (states[rndwgtidx])
+
     def available_actions(self, poswgt=1):
         acts = {}
         # poswgt will weight the upward direction, since it seems like we are
@@ -213,47 +244,57 @@ class WeightAgent():
     def take_action(self):
         change = [1, -1]
         next_move = (0,0)
+        next_state = None
         if np.random.rand() < self._epsilon:    # random choice
-            # There will be times that we cannot go up or down, so make
-            # sure we don't try those.
-            options = self.available_actions(1)     # was 5; checking completeness
-            # print("    random choice")
-            moves = []
-            for direction in change:
-                for idx in options[direction]:
-                    moves.append((idx, direction))
-            if len(moves) > 0:
-                chidx = np.random.choice(len(moves))
-                next_move = (moves[chidx][0], moves[chidx][1])
+            if not self.createspace:
+                next_state = self.random_value_state()
+            else:
+                # There will be times that we cannot go up or down, so make
+                # sure we don't try those.
+                options = self.available_actions(1)     # was 5; checking completeness
+                # print("    random choice")
+                moves = []
+                for direction in change:
+                    for idx in options[direction]:
+                        moves.append((idx, direction))
+                if len(moves) > 0:
+                    chidx = np.random.choice(len(moves))
+                    next_move = (moves[chidx][0], moves[chidx][1])
         else:           # Select best so far
-            options = self.available_actions(1)
-            # print("    best so far choice")
-            curr_wgts = [w for w in self._player.weights]
-            # print("current weights = " + str(curr_wgts))
-            best_val = -2
-            # best_wgts = None
-            # best_state = 0
-            for direction in change:
-                for idx in options[direction]:
-                    self.update_wgt(idx, direction)
-                    state = self.calc_state()
-                    if state != 0:      # reject factors / duplicates
-                        # think there's a faster way to do this
-                        if state not in self.values.keys():
-                            self._values[state] = self._defval
-                        val = self.values[state]
-                        if val > best_val:
-                            best_val = val
-                            # best_wgts = self._player.weights
-                            # best_state = state
-                            next_move = (idx, direction)
-                    else:
-                        print("Rejected " + str(self.weights))
-                    self.reset_wgts(curr_wgts)
-        # print("weights are " + str(self.weights) + ", next move: " + str(next_move))
-        # Apply the next move
-        self.update_wgt(next_move[0], next_move[1], True)     # index then direction
-        state = self.calc_state()
+            if not self.createspace:
+                next_state = self.best_value_state()
+            else:
+                options = self.available_actions(1)
+                # print("    best so far choice")
+                curr_wgts = [w for w in self._player.weights]
+                # print("current weights = " + str(curr_wgts))
+                best_val = -2
+                # best_wgts = None
+                # best_state = 0
+                for direction in change:
+                    for idx in options[direction]:
+                        self.update_wgt(idx, direction)
+                        state = self.calc_state()
+                        if state != 0:      # reject factors / duplicates
+                            # think there's a faster way to do this
+                            if state not in self.values.keys():
+                                self._values[state] = self._defval
+                            val = self.values[state]
+                            if val > best_val:
+                                best_val = val
+                                # best_wgts = self._player.weights
+                                # best_state = state
+                                next_move = (idx, direction)
+                        else:
+                            print("Rejected " + str(self.weights))
+                        self.set_wgts(curr_wgts)
+                # print("weights are " + str(self.weights) + ", next move: " + str(next_move))
+        if not self.createspace:
+            state = next_state
+        else:
+            # Apply the next move
+            self.update_wgt(next_move[0], next_move[1], True)  # index then direction
+            state = self.calc_state()
         # This is clunky.  Figure out how to do it more cleanly.
         if state not in self.values.keys():
             self._values[state] = self._defval
