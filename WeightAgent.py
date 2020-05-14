@@ -224,7 +224,7 @@ class WeightAgent():
         # Not sure if this is necessary...
         states = [st for st in self.values.keys()]
         spsiz = len(states)
-        rndwgtidx = random.randint(0, spsiz)
+        rndwgtidx = random.randint(0, spsiz-1)
         # print("States are: " + str(states))
         # print("Random index is " + str(rndwgtidx))
         return (states[rndwgtidx])
