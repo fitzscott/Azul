@@ -33,6 +33,7 @@ class WeightAgent():
         self._state_hist = []
         self._localwgts = None
         self._createspace = True
+        self._scaled_alpha = True
 
     def clear_eps(self):
         self._epsilon = 0
@@ -118,6 +119,14 @@ class WeightAgent():
     @createspace.setter
     def createspace(self, val):
         self._createspace = val
+
+    @property
+    def scaled_alpha(self):
+        return (self._scaled_alpha)
+
+    @scaled_alpha.setter
+    def scaled_alpha(self, val):
+        self._scaled_alpha = val
 
     def add_value(self, state, val, runcount=1):
         # print("Adding value " + str(val) + " and test count " +
@@ -312,7 +321,10 @@ class WeightAgent():
             # newval = prevval + self._learnrate * (target - prevval)
             # Update the test count for this state
             self.testcount[prev] = self.testcount.get(prev, 0) + 1
-            adjalpha = 1 + self.testcount[prev] / 100.0
+            if self.scaled_alpha:
+                adjalpha = 1 + self.testcount[prev] / 100.0
+            else:
+                adjalpha = 1
             newval = prevval + self._learnrate * (target - prevval) / adjalpha
             self.values[prev] = newval
             target = newval

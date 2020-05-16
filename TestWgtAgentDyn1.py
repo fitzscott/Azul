@@ -69,7 +69,7 @@ def agentvalzflnm(strats):
 
 
 def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
-              alpha=None, epsilon=None, cr8_spc=True):
+              alpha=None, epsilon=None, cr8_spc=True, adj_alpha=True):
     # trimdstrats = [strat.split(":")[0] for strat in strats]
     agent = wa.WeightAgent(-1)
     plyrwgtcombos = strats      # Unnecessary, but it calms the code a little
@@ -97,6 +97,8 @@ def runXiters(strats, iters, agentstrats, wgts=None, maxwgt=None, incr=None,
     if not cr8_spc:
         # print("not creating search space")
         agent.createspace = False
+    if not adj_alpha:
+        agent.scaled_alpha = False
 
     for itr in range(iters):
         # Set up the game.  Ideally, we wouldn't do this every time,
@@ -164,7 +166,7 @@ def readvalue(strats):
     return (valz)
 
 def pickstrats(stratfile, iters, agentstrats=None, maxwgt=None, incr=None,
-               alpha=None, epsilon=None, cr8_spc=True):
+               alpha=None, epsilon=None, cr8_spc=True, adj_alpha=True):
     pickcount = 0
     stratsets = []
     # First, get the list of weighted strategy combinations to use.
@@ -179,7 +181,7 @@ def pickstrats(stratfile, iters, agentstrats=None, maxwgt=None, incr=None,
         agentstrats = "CentralPositionStrategy+ExactFitStrategy+FillRowStrategy+MinPenaltyStrategy+TopRowsStrategy"
     wgts = readvalue(agentstrats)
     runXiters(fullwgtset, iters, agentstrats, wgts, maxwgt, incr, alpha,
-              epsilon, cr8_spc)
+              epsilon, cr8_spc, adj_alpha)
 
 
 if __name__ == "__main__":
@@ -207,4 +209,10 @@ if __name__ == "__main__":
         cr8_spc = int(sys.argv[8]) == 1
     else:
         cr8_spc = True
-    pickstrats(stratfile, iters, strats, maxwgt, incr, alpha, epsilon, cr8_spc)
+    if len(sys.argv) > 9:
+        adj_alpha = int(sys.argv[9]) == 1
+    else:
+        adj_alpha = True
+
+    pickstrats(stratfile, iters, strats, maxwgt, incr, alpha, epsilon,
+               cr8_spc, adj_alpha)
