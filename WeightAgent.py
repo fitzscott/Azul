@@ -326,6 +326,9 @@ class WeightAgent():
             else:
                 adjalpha = 1
             newval = prevval + self._learnrate * (target - prevval) / adjalpha
+            # print("Updating " + str(prev) + " from " + str(self.values[prev]) +
+            #       " to " + str(newval) + ", count " +
+            #       str(self.testcount[prev]) + ", adjust " + str(adjalpha))
             self.values[prev] = newval
             target = newval
         self.reset_history()
