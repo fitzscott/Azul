@@ -2,6 +2,8 @@ import sys
 import os
 
 if __name__ == "__main__":
+    print(" ".join(sys.argv))
+    sys.exit(-1)
     bsflnm = sys.argv[1].strip().split(".")[0]
 
     wfl = open("new_" + bsflnm + ".txt", "w")
