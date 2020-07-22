@@ -116,7 +116,10 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
                     break
 
     def addstratbystr(self, stratstr):
+        found = False
         for stratcls in ComboStrategyPlayer.strats:
             if stratcls.__name__ == stratstr:
                 self.addstrategy(stratcls())
+                found = True
                 break
+        assert (found)
