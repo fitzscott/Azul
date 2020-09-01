@@ -32,6 +32,33 @@ class DBPlayerInfo():
     def cnct(self):
         return(self._cnct)
 
+    def setstate2wgtstratset(self, state, val=None):
+        if val is not None:     # assignment
+            self._state2wss[state] = val
+        return (self._state2wss[state])
+
+    def find_wss(self, curs, state):
+        # The weighted strategy set ID keeps getting generated, even when
+        # a row exists for strategy ID + weight. Changing the table definition
+        # to force that to be unique would catch this error, but need to just
+        # get around it for now.
+        cnt = 0
+        selstr = """
+        SELECT WeightedStrategySetID
+        FROM weighted_strategy_set 
+        WHERE StrategySetID = {0}
+            AND WeightSummaryNum = {1}
+        """.format(self.StratSetId, state)
+        curs.execute(selstr)
+        for (wss,) in curs:
+            cnt += 1
+        if cnt > 0:
+            print("Found unexpected WSS = " + str(wss))
+            retval = wss
+        else:
+            retval = -1
+        return (retval)
+
     def getstate2wgtstratset(self, state, agent):
         """
         This is an odd get method. The key may not exist in the structure,
@@ -50,6 +77,12 @@ class DBPlayerInfo():
         epc = str(time.mktime(datetime.today().timetuple())).split(".")[0]
         wrcurs = self.cnct.cursor()
         if state not in self._state2wss.keys():
+            wss = self.find_wss(wrcurs, state)      # kludge
+            if wss != -1:
+                self._state2wss[state] = wss
+        if state not in self._state2wss.keys():
+            # print("State " + str(state) + " not in " +
+            #       str(self._state2wss.keys()))
             # create a new row in the DB
             wssinsstr = """
             INSERT INTO weighted_strategy_set (StrategySetID,
@@ -65,6 +98,7 @@ class DBPlayerInfo():
             """.format(wssid, winrt, execnt, epc)
             # print(agvinsstr)
             wrcurs.execute(agvinsstr)
+            self.setstate2wgtstratset(state, wssid)
         else:
             wssid = self._state2wss[state]
             agvupdstr = """
@@ -81,11 +115,6 @@ class DBPlayerInfo():
         wrcurs.close()
         return(wssid)
 
-    def setstate2wgtstratset(self, state, val=None):
-        if val is not None:     # assignment
-            self._state2wss[state] = val
-        return (self._state2wss[state])
-
     @property
     def player(self):
         return (self._plyr)
@@ -97,6 +126,10 @@ class DBPlayerInfo():
     @property
     def wgtdstratsetid(self):
         return (self._wgtdstratsetid)
+
+    @property
+    def state2wss(self):
+        return (self._state2wss)
 
     def setNonAgentGrpId(self, grpid):
         """
@@ -168,7 +201,7 @@ class DBPlayerInfo():
         return (agstrats)
 
 
-    def setupAgent(self, stratsetid, agent, plnum, assignvals):
+    def setupAgent(self, stratsetid, agent, plnum, assignvals, state2wss):
         if assignvals:
             agentstrats = self.setStratSetId(stratsetid)
             selstr = """
@@ -205,6 +238,8 @@ class DBPlayerInfo():
                          for strat in agent.player.strategies]
             # print("Running for " + "+".join(stratsstr))
             agentstrats = "+".join(stratsstr)
+            if state2wss is not None:
+                self._state2wss = state2wss
         # print("assigning strategies " + agentstrats)
         agent.assign_player(self._game, self.dbplayerboard, agentstrats, plnum)
         self._agent = agent

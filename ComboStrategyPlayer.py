@@ -117,6 +117,7 @@ class ComboStrategyPlayer(cp.ComputerPlayer):
 
     def addstratbystr(self, stratstr):
         found = False
+        # print("Looking for strategy " + stratstr)
         for stratcls in ComboStrategyPlayer.strats:
             if stratcls.__name__ == stratstr:
                 self.addstrategy(stratcls())

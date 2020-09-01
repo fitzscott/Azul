@@ -44,6 +44,7 @@ class TestWgtAgentDB1():
         self._compgrpids = []
         self._agentplnum = None
         self._state = None
+        self._state2wss = {}
 
     @property
     def agent(self):
@@ -102,10 +103,20 @@ class TestWgtAgentDB1():
                 grpid = grpids[random.randint(0, lengrp-1)]
                 dbp.setNonAgentGrpId(grpid)
             else:
-                dbp.setupAgent(stratset, self.agent, plnum, assignvals)
+                dbp.setupAgent(self._agentstrats, self.agent, plnum,
+                               assignvals, self._state2wss)
                 # print(agent)
             # print(dbp.player)
             self._dbplyrz.append(dbp)
+
+    def getdbpstate2wss(self):
+        ret = None
+        for plnum in range(len(self._dbplyrz)):
+            s2w = self._dbplyrz[plnum].state2wss
+            if s2w is not None and len(s2w.keys()) > 0:
+                ret = s2w
+                break
+        return (ret)
 
     def saveGameData(self, runtime, winrz):
         """
@@ -179,6 +190,7 @@ class TestWgtAgentDB1():
             gamestart = time.time()
             winrz = twad.rungame(plyrz, plcnt, self._game, gameno, gameno+1)
             currtime = time.time()
+            self._state2wss = self.getdbpstate2wss()    # save state-to-WSS
             self.saveGameData(currtime - gamestart, winrz)
         self.shutdown()
 
