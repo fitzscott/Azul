@@ -91,6 +91,13 @@ class TestWgtAgentDB1():
         self._agentplnum = random.randint(0, cnt-1)
         if self.agent is None:
             self.agent = wa.WeightAgent(-1)
+            # These all should've gone into a constructor
+            self.agent.max_weight = self._maxwgt
+            self.agent.increment = self._incr
+            self.agent.alpha = self._alpha
+            self.agent.epsilon = self._epsilon
+            self.agent.createspace = self._cr8spc
+            self.agent.scaled_alpha = self._adjalpha
             assignvals = True
         else:
             assignvals = False

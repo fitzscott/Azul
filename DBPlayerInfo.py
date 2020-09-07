@@ -213,8 +213,8 @@ class DBPlayerInfo():
             FROM agent_value av
                 JOIN weighted_strategy_set wss
                 ON av.WeightedStrategySetID = wss.WeightedStrategySetID
-                JOIN strategy_set ss
-                ON wss.StrategySetID = ss.StrategySetID
+                /*JOIN strategy_set ss
+                ON wss.StrategySetID = ss.StrategySetID*/
             WHERE wss.StrategySetID = {0}
             """.format(self.StratSetId)
             # print(selstr)
