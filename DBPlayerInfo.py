@@ -24,6 +24,10 @@ class DBPlayerInfo():
     def StratSetId(self):
         return (self._StratSetId)
 
+    @StratSetId.setter
+    def StratSetId(self, val):
+        self._StratSetId = val
+
     @property
     def game(self):
         return (self._game)

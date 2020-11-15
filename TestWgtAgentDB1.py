@@ -53,7 +53,43 @@ class TestWgtAgentDB1():
     @agent.setter
     def agent(self, val):
         self._agent = val
-        
+
+    @property
+    def agentplnum(self):
+        return (self._agentplnum)
+
+    @agentplnum.setter
+    def agentplnum(self, val):
+        self._agentplnum = val
+
+    @property
+    def agentstrats(self):
+        return (self._agentstrats)
+
+    @property
+    def compgrp(self):
+        return (self._compgrp)
+
+    @property
+    def compgrpids(self):
+        return (self._compgrpids)
+
+    @property
+    def state(self):
+        return (self._state)
+
+    @property
+    def dbplyrz(self):
+        return (self._dbplyrz)
+
+    @property
+    def game(self):
+        return (self._game)
+
+    @property
+    def state2wss(self):
+        return (self._state2wss)
+
     def startup(self):
         self._cnct = mysql.connector.connect(**dbcfg.dbcon)
 
@@ -86,9 +122,7 @@ class TestWgtAgentDB1():
             assert(len(self._compgrpids) > 0)
         return (self._compgrpids)
 
-    def setupplayers(self, cnt=4):
-        assert(self._game is not None)
-        self._agentplnum = random.randint(0, cnt-1)
+    def setupagent(self):
         if self.agent is None:
             self.agent = wa.WeightAgent(-1)
             # These all should've gone into a constructor
@@ -101,6 +135,12 @@ class TestWgtAgentDB1():
             assignvals = True
         else:
             assignvals = False
+        return (assignvals)
+
+    def setupplayers(self, cnt=4):
+        assert(self._game is not None)
+        self._agentplnum = random.randint(0, cnt-1)
+        assignvals = self.setupagent()
 
         grpids = self.getrandgrpids()
         lengrp = len(grpids)
@@ -172,6 +212,7 @@ class TestWgtAgentDB1():
                 # adjust agent values - reward 1 is best, 0 worst
                 rwd = (4 - gamerank) * 1.0 / 3.0
                 self.agent.update_vals(rwd)
+                # print("Agent state {0} self {1}".format(state, self._state))
                 wssi = plyr.getstate2wgtstratset(self._state, self.agent)
             insRslts = """
             INSERT INTO game_results (GameId, PlayerPosNum,

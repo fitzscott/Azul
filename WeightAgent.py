@@ -40,6 +40,7 @@ class WeightAgent():
 
     def __str__(self):
         retstr = "Player " + str(self._playernum) + "\n" + \
+            "Max wgt = " + str(self._max_wgt) + ", incr = " + str(self._increment) + \
             "Epsilon = " + str(self._epsilon) + ", alpha = " + \
             str(self._learnrate) + "\nValues = " + str(self._values) + "\n" + \
             str(self._player) + "\n    : " + str(self._player.weights)
