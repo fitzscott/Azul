@@ -32,9 +32,20 @@ def refine(wgt, amax=5, amin=1):
     refinments = [adjust(wgtints, a) for a in adjs]
     retrefs = [r for r in refinments if inrange(r, amin, amax)
                and not chkdupes(r, amax)]
-    for r in retrefs:
-        print("".join(str(r)))
+    # for r in retrefs:
+    #     print("".join(str(r)))
     return (retrefs)
 
 if __name__ == "__main__":
-    refine("133513")
+    r = "133513"
+    r1 = refine(r)
+    print("size of {0} = {1}".format(r, len(r1)))
+    r = "531135311"
+    r1 = refine(r)
+    print("size of {0} = {1}".format(r, len(r1)))
+    r = "333135333"
+    r1 = refine(r)
+    print("size of {0} = {1}".format(r, len(r1)))
+    r = "333133333"
+    r1 = refine(r)
+    print("size of {0} = {1}".format(r, len(r1)))
