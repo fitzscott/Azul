@@ -11,10 +11,16 @@ class SmartWgtGraphicGame(gg.GraphicGame):
     """
     def __init__(self, numplayers=4):
         super().__init__(numplayers)
+        self._stratflnm = None
 
-    def addCompPlayers(self, flnm="bestwgtd01.txt"):
+    def addCompPlayers(self, flnm=None):
         # First, get the list of weighted strategy combinations to use.
-        wgtfile = open(flnm)
+        if flnm is None:
+            if self._stratflnm is None:
+                self._stratflnm = "bestwgtd01.txt"
+        else:
+            self._stratflnm = flnm
+        wgtfile = open(self._stratflnm)
         wgtcombos = wgtfile.readlines()
         wgtfile.close()
         fullwgtset = []
