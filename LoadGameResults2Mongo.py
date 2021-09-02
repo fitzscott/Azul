@@ -31,7 +31,7 @@ class LoadGameResults2Mongo():
                 playpos += 1
             winloss = flds[1][0]
             strats = "+".join(flds[3:-4])
-            scor = flds[-1]
+            scor = int(flds[-1])
             clxn.insert_one({"gameid": gameid, "playerpos": playpos,
                              "score": scor, "winflag": winloss,
                              "strategysetid": strats})
