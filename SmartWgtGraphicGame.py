@@ -42,7 +42,7 @@ class SmartWgtGraphicGame(gg.GraphicGame):
             choice = random.randint(0, len(fullwgtset)-1)
             for stratstr in fullwgtset[choice].split("+"):
                 plyr.addstratbystr(stratstr)
-            if len(wgts) > 0:
+            if len(wgts) > choice:
                 plyr.weights = wgts[choice]
             else:
                 plyr.stdweight()
