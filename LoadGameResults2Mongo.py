@@ -23,6 +23,9 @@ class LoadGameResults2Mongo():
         playpos = -1
         for ln in fl:
             flds = ln.strip().split()
+            if len(flds) < 5:
+                print("not enough records?: [{0}]".format(ln.strip()))
+                continue
             gameid = flds[0]
             if gameid != prevgame:
                 playpos = 1
