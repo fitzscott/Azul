@@ -14,13 +14,16 @@ class LoadGameResults2Mongo():
     def disconnect(self):
         self._drv.close()
 
-    def load2mongo(self):
+    def load2mongo(self, drop=True):
         self.connect()
+        if drop:
+            self._drv.azul.drop_collection("gameresults")
         clxn = self._drv.azul.gameresults
         savflnm = self._flnm.split("\\")[-1]
         fl = open(self._flnm)
         prevgame = ""
         playpos = -1
+        cnt = 0
         for ln in fl:
             flds = ln.strip().split()
             if len(flds) < 5:
@@ -38,7 +41,11 @@ class LoadGameResults2Mongo():
             clxn.insert_one({"gameid": gameid, "playerpos": playpos,
                              "score": scor, "winflag": winloss,
                              "strategysetid": strats})
+            cnt += 1
+            if (cnt % 100 == 0):
+                print("inserted {0} records / {1} games".format(cnt, cnt // 4))
         fl.close()
+        print("inserted {0} records / {1} games".format(cnt, cnt // 4))
         self.disconnect()
 
 if __name__ == "__main__":
