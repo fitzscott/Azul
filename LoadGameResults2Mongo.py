@@ -18,6 +18,7 @@ class LoadGameResults2Mongo():
         self.connect()
         if drop:
             self._drv.azul.drop_collection("gameresults")
+            print("collection gameresults dropped")
         clxn = self._drv.azul.gameresults
         savflnm = self._flnm.split("\\")[-1]
         fl = open(self._flnm)
@@ -50,8 +51,12 @@ class LoadGameResults2Mongo():
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
-        print("usage: {0} gameResultsFile".format(sys.argv[0]))
+        print("usage: {0} gameResultsFile [dropFlag]".format(sys.argv[0]))
         sys.exit(-1)
 
+    if len(sys.argv) > 2:
+        dropFlg = sys.argv[2] == "1"
+    else:
+        dropFlg = True
     lss = LoadGameResults2Mongo(sys.argv[1])
-    lss.load2mongo()
+    lss.load2mongo(dropFlg)
