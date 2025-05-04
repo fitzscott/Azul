@@ -9,6 +9,7 @@ class LoadStratsGame2MySQL():
     def __init__(self, strats, res):
         self._cnct = None
         self._stratsflnm = strats
+        # self._trunc = self._stratsflnm != "-"
         self._gameresflnm = res
         self._stratsids = {}
 
@@ -28,12 +29,11 @@ class LoadStratsGame2MySQL():
         weights = [max(r, 1) for r in range(maxwgt, maxwgt - stratcnt, -1)]
         return ("".join([str(w) for w in weights]))
 
-    def savestrats(self, trunc=True):
+    def savestrats(self):
         wrcurs = self._cnct.cursor()
-        if trunc:
-            truncstmt = "TRUNCATE TABLE strategy_set_gui"
-            wrcurs.execute(truncstmt)
-            print("table strategy_set_gui truncated")
+        truncstmt = "TRUNCATE TABLE strategy_set_gui"
+        wrcurs.execute(truncstmt)
+        print("table strategy_set_gui truncated")
         fl = open(self._stratsflnm)
         for ln in fl:
             flds = ln.strip().split(":")
@@ -101,13 +101,17 @@ class LoadStratsGame2MySQL():
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("usage: {0} strategyFile resultsFile".format(sys.argv[0]))
+        print("usage: {0} strategyFile resultsFile [truncate]".format(sys.argv[0]))
         sys.exit(-1)
 
     stratsfl = sys.argv[1]
     resfl = sys.argv[2]
+    if len(sys.argv) > 3:
+        truncflg = sys.argv[3] == "1"
+    else:
+        truncflg = True
     lssg2m = LoadStratsGame2MySQL(stratsfl, resfl)
     lssg2m.startup()
     lssg2m.savestrats()
-    lssg2m.savegameresults()
+    lssg2m.savegameresults(truncflg)
     lssg2m.shutdown()
